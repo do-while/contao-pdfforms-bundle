@@ -15,7 +15,7 @@ Detailed instructions can be found as a PDF file in the extension directory:<br>
 
 
 ## Installation
-Installieren Sie die Erweiterung einfach mit dem **Contao Manager ** oder auf der Kommandozeile mit dem **Composer**: 
+Installieren Sie die Erweiterung einfach mit dem **Contao Manager** oder auf der Kommandozeile mit dem **Composer**: 
 *Simply install the extension with the **Contao Manager** or on the command line with the **Composer**:*
 ```
 composer require do-while/contao-pdfforms-bundle
