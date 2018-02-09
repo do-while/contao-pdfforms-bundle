@@ -22,13 +22,10 @@ composer require do-while/contao-pdfforms-bundle
 ```
 
 ## Version
-* 1.0.0 
-Freigabedatum: 2018-02-09 
-Version für Contao ab Version 4.4 LTS
+* 1.0.0<br>Freigabedatum: 2018-02-09<br>Version für Contao ab Version 4.4 LTS
 
 
-**Problem melden | *Report Problem*:** 
-per E-Mail | *via Email*: licence@softleister.de
+**Problem melden | *Report Problem*:**<br>per E-Mail | *via Email*: licence@softleister.de
 
 ___
 Softleister - 2018-02-09
