@@ -1,0 +1,7 @@
+.header_testpdf {
+    padding:2px 0 3px 22px;
+    background-image:url("pdf_positions.png");
+    background-position:left center;
+    background-repeat:no-repeat;
+    margin-left:15px;
+}
