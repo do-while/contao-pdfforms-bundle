@@ -7,7 +7,7 @@
  * @author     Softleister <info@softleister.de>
  * @package    contao-pdfforms-bundle
  * @licence    LGPL
- * @see	       https://github.com/do-while/contao-pdfforms-bundle
+ * @see        https://github.com/do-while/contao-pdfforms-bundle
  */
 
 namespace Softleister\Pdfforms;
@@ -71,6 +71,9 @@ class PdfformsTestPdf extends \Backend
                          'arrFields'     => $arrFields,
                         );
         unset( $arrFields );
+        if( !is_numeric($arrPDF['offset'][0] ) ) $arrPDF['offset'][0] = 0;
+        if( !is_numeric($arrPDF['offset'][1] ) ) $arrPDF['offset'][1] = 0;
+
         if( !is_array($arrPDF['protectflags']) ) $arrPDF['protectflags'] = array( $arrPDF['protectflags'] );
 
         // HOOK: before pdf generation
