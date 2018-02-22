@@ -20,6 +20,11 @@ Installieren Sie die Erweiterung einfach mit dem **Contao Manager** oder auf der
 composer require do-while/contao-pdfforms-bundle
 ```
 
+## Documentation
+[Deutsches Handbuch](http://www.softleister.de/files/manuals/contao-pdfforms-bundle/Anleitung_contao-pdfforms-bundle.pdf)
+[English manual](http://www.softleister.de/files/manuals/contao-pdfforms-bundle/Manual_contao-pdfforms-bundle.pdf)
+
+
 ## Version
 * 1.0.0<br>Freigabedatum: 2018-02-09<br>Version für Contao ab Version 4.4 LTS
 
