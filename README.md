@@ -21,7 +21,7 @@ composer require do-while/contao-pdfforms-bundle
 ```
 
 ## Documentation
-[Deutsches Handbuch](http://www.softleister.de/files/manuals/contao-pdfforms-bundle/Anleitung_contao-pdfforms-bundle.pdf)
+[Deutsches Handbuch](http://www.softleister.de/files/manuals/contao-pdfforms-bundle/Anleitung_contao-pdfforms-bundle.pdf)<br>
 [English manual](http://www.softleister.de/files/manuals/contao-pdfforms-bundle/Manual_contao-pdfforms-bundle.pdf)
 
 
