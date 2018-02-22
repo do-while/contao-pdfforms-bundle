@@ -64,9 +64,9 @@ class PdfformsHookControl extends \Backend
                          'handler'       => $objForm->pdff_handler,
                          'savepath'      => $savepath,
                          'protect'       => $objForm->pdff_protect,
-                         'openpassword'  => $objForm->pdff_openpassword,
+                         'openpassword'  => \Controller::replaceInsertTags( \Encryption::decrypt($objForm->pdff_openpassword) ),
                          'protectflags'  => deserialize($objForm->pdff_protectflags),
-                         'password'      => $objForm->pdff_password,
+                         'password'      => \Controller::replaceInsertTags( \Encryption::decrypt($objForm->pdff_password) ),
                          'allpages'      => $objForm->pdff_allpages,
                          'offset'        => deserialize($objForm->pdff_offset),
                          'textcolor'     => $objForm->pdff_textcolor,
@@ -122,6 +122,7 @@ class PdfformsHookControl extends \Backend
             $arrTokens = array();
             $arrTokens['admin_email'] = $GLOBALS['TL_ADMIN_EMAIL'];
             if( !empty($pdfdatei) ) $arrTokens['pdfdocument'] = $pdfdatei;
+            $arrTokens['openpassword'] = $arrPDF['openpassword'];
             $arrTokens['raw_data'] = '';
 
             foreach( $arrSubmitted as $key=>$val ) {
@@ -160,6 +161,7 @@ class PdfformsHookControl extends \Backend
     //
     //  {{pdf_forms::pdfdocument}}
     //  {{pdf_forms::pdfdocument::name}}
+    //  {{pdf_forms::password_random}}
     //-----------------------------------------------------------------
     public function myReplaceInsertTags( $strTag )
     {
@@ -174,6 +176,9 @@ class PdfformsHookControl extends \Backend
                 case 'name':    return basename($_SESSION['pdf_forms']['pdfdocument']);
                 default:        return $_SESSION['pdf_forms']['pdfdocument'];
             }
+        }
+        else if( strtolower($tag[1] === 'password_random' ) ) {
+            return PdfformsHelper::getRandomPassword( );
         }
 
         return false;                                                           // kein bekannter InsertTag => nicht zuständig!

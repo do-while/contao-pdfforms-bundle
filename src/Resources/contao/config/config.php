@@ -10,7 +10,7 @@
  * @see	       https://github.com/do-while/contao-pdfforms-bundle
  */
 
-define('PDFFORMS_VERSION', '1.0');
+define('PDFFORMS_VERSION', '1.1');
 define('PDFFORMS_BUILD'  , '0');
 
 /**
@@ -36,8 +36,8 @@ $GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['pdf_forms'] = array
     'pdf_form_transmit' => array(
             'recipients'            => array('admin_email', 'form_*'),      // Empfänger
             'email_subject'         => array('form_*', 'admin_email'),      // Betreff
-            'email_text'            => array('form_*', 'raw_data', 'admin_email'),
-            'email_html'            => array('form_*', 'raw_data', 'admin_email'),
+            'email_text'            => array('form_*', 'raw_data', 'openpassword', 'admin_email'),
+            'email_html'            => array('form_*', 'raw_data', 'openpassword', 'admin_email'),
             'file_name'             => array('form_*', 'admin_email'),
             'file_content'          => array('form_*', 'admin_email'),
             'email_recipient_cc'    => array('admin_email', 'form_*'),      // Kopie an

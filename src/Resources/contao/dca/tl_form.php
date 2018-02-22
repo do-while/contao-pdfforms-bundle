@@ -12,7 +12,7 @@
 
 // Subpalette hinzufügen
 $GLOBALS['TL_DCA']['tl_form']['subpalettes']['pdff_on']      = 'pdff_vorlage,pdff_handler,pdff_savepath,pdff_fileext,pdff_notification,pdff_allpages,pdff_offset,pdff_textcolor,pdff_title,pdff_author,pdff_protect';
-$GLOBALS['TL_DCA']['tl_form']['subpalettes']['pdff_protect'] = 'pdff_openpassword,pdff_protectflags,pdff_password';
+$GLOBALS['TL_DCA']['tl_form']['subpalettes']['pdff_protect'] = 'pdff_password,pdff_openpassword,pdff_protectflags';
 
 // Selector hinzufügen
 $GLOBALS['TL_DCA']['tl_form']['palettes']['__selector__'][] = 'pdff_on'; 
@@ -153,7 +153,7 @@ $GLOBALS['TL_DCA']['tl_form']['fields']['pdff_password'] = array (
     'label'     => &$GLOBALS['TL_LANG']['tl_form']['pdff_password'],
     'exclude'   => true,
     'inputType' => 'text',
-    'eval'      => array('preserveTags'=>true, 'encrypt'=>true, 'tl_class'=>'w50'),
+    'eval'      => array('preserveTags'=>true, 'encrypt'=>true, 'tl_class'=>'clr w50'),
     'sql'       => "varchar(128) NOT NULL default ''"
 );
 
