@@ -10,8 +10,10 @@
  * @see	       https://github.com/do-while/contao-pdfforms-bundle
  */
 
+require_once( TL_ROOT . '/vendor/do-while/contao-pdfforms-bundle/src/Resources/contao/classes/PdfformsHelper.php' );
+
 // Subpalette hinzufügen
-$GLOBALS['TL_DCA']['tl_form']['subpalettes']['pdff_on']      = 'pdff_vorlage,pdff_handler,pdff_savepath,pdff_fileext,pdff_notification,pdff_allpages,pdff_offset,pdff_textcolor,pdff_title,pdff_author,pdff_protect';
+$GLOBALS['TL_DCA']['tl_form']['subpalettes']['pdff_on']      = 'pdff_vorlage,pdff_handler,pdff_savepath,pdff_fileext,pdff_notification,pdff_multiform,pdff_allpages,pdff_offset,pdff_textcolor,pdff_title,pdff_author,pdff_protect';
 $GLOBALS['TL_DCA']['tl_form']['subpalettes']['pdff_protect'] = 'pdff_password,pdff_openpassword,pdff_protectflags';
 
 // Selector hinzufügen
@@ -167,6 +169,36 @@ $GLOBALS['TL_DCA']['tl_form']['fields']['pdff_protectflags'] = array (
     'sql'       => "blob NULL"
 );
 
+$GLOBALS['TL_DCA']['tl_form']['fields']['pdff_multiform'] = array (
+    'label'                   => &$GLOBALS['TL_LANG']['tl_form']['pdff_multiform'],
+    'exclude'                 => true,
+    'inputType'               => 'multiColumnWizard',
+    'eval'                    => array
+    (
+            'columnFields' => array
+            (
+                    'bedingung' => array
+                    (
+                            'label'             => &$GLOBALS['TL_LANG']['tl_form']['multiform_bedingung'],
+                            'exclude'           => true,
+                            'inputType'         => 'select',
+                            'eval'              => array('style' => 'width:235px', 'chosen' => true, 'includeBlankOption' => true),
+                            'options_callback'  => array('tl_pdff_form', 'getFelder'),
+                    ),
+                    'seiten' => array
+                    (
+                            'label'             => &$GLOBALS['TL_LANG']['tl_form']['multiform_seiten'],
+                            'default'           => '',
+                            'exclude'           => true,
+                            'inputType'         => 'text',
+                            'eval'              => array('allowHtml' => true, 'style' => 'width:265px'),
+                    ),
+            )
+    ),
+    'sql'                     => "mediumtext NULL"
+);
+
+
 
 
 class tl_pdff_form extends \tl_form
@@ -188,4 +220,15 @@ class tl_pdff_form extends \tl_form
         }
         return $arrChoices;
     }
+    
+    
+    //-----------------------------------------------------------------
+    //  Erstellt eine Liste der Formularfelder
+    //  $dc->currentRecord   ist die ID des tl_pdff_positions
+    //-----------------------------------------------------------------
+    public function getFelder( $dc )
+    {
+        return Softleister\Pdfforms\PdfformsHelper::getFormFields( $dc->currentRecord );
+    }
+    
 }

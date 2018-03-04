@@ -10,7 +10,7 @@
  * @see	       https://github.com/do-while/contao-pdfforms-bundle
  */
 
-define('PDFFORMS_VERSION', '1.2');
+define('PDFFORMS_VERSION', '1.3');
 define('PDFFORMS_BUILD'  , '0');
 
 /**

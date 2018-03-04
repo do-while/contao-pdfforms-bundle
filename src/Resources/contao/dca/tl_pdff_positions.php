@@ -10,6 +10,7 @@
  * @see	       https://github.com/do-while/contao-pdfforms-bundle
  */
 
+require_once( TL_ROOT . '/vendor/do-while/contao-pdfforms-bundle/src/Resources/contao/classes/PdfformsHelper.php' );
 
 /**
  * Table tl_pdff_positions
@@ -333,76 +334,12 @@ class tl_pdff_positions extends Backend
     //-----------------------------------------------------------------
     public function getFelder( $dc )
     {
-        $arrFields = array();                       //=== Aufbau eines Feldes mit Vergleichswerten ===
-        $cm_text = '';
-        $cm_nr = 0;
-
-        // Formular ermitteln
-        $objFormField = $this->Database->prepare("SELECT * FROM tl_form_field WHERE invisible<>1 AND pid=(SELECT pid FROM tl_pdff_positions WHERE id=?) ORDER BY sorting")
-                                       ->execute($dc->currentRecord);
-
-        if( $objFormField->numRows < 1 ) return $arrFields;                         // keine Felder nicht gefunden: leeres Array zurück
-
-        while( $objFormField->next() ) {
-            $options = deserialize($objFormField->options);                         // Options auflösen
-
-            switch( $objFormField->type ) {
-                case 'submit':              continue;                               // Kommt nicht in die Liste
-
-                case 'efgLookupRadio':
-                case 'efgLookupCheckbox':
-                case 'efgLookupSelect':
-                                            $efgOpt = deserialize($objFormField->efgLookupOptions);
-                                            $dot = strpos( $efgOpt['lookup_val_field'], '.' ) + 1;
-                                            $val_field = substr($efgOpt['lookup_val_field'], $dot);
-                                            $name_field = substr($efgOpt['lookup_field'], $dot);
-
-                                            $sql = 'SELECT ' . $val_field . ', ' . $name_field
-                                                 . ' FROM ' . substr($efgOpt['lookup_field'], 0, strpos($efgOpt['lookup_field'], '.'));
-                                            if( !empty($efgOpt['lookup_where']) ) $sql .= ' WHERE ' . html_entity_decode($efgOpt['lookup_where']);
-                                            if( !empty($efgOpt['lookup_sort']) )  $sql .= ' ORDER BY ' . html_entity_decode($efgOpt['lookup_sort']);
-                                            $objOpts = $this->Database->execute($sql);
-
-                                            while( $objOpts->next() ) {
-                                                $options[] = array('value'=>$objOpts->$val_field, 'label'=>$objOpts->$name_field);
-                                            }
-                                            // v v v   weiter, wie select, radio, checkbox   v v v
-                case 'select':
-                case 'radio':
-                case 'checkbox':
-                                            if( empty($options) ) continue;
-                                            foreach($options as $opt) {                             // Die Optionen einzeln
-                                                $arrFields[$objFormField->name . '~'. $opt['value']] = $objFormField->name . '~'. $opt['value'];
-                                            }
-                                            break;
-
-                case 'condition':
-                case 'text':
-                case 'textarea':
-                case 'hidden':              $arrFields[$objFormField->name] = $objFormField->name;  // Feldname direkt
-                                            break;
-
-                case 'cm_alternative':      if( $objFormField->cm_alternativeType === 'cm_stop' ) break;
-                                            if( $objFormField->cm_alternativeType === 'cm_start' ) {
-                                                $cm_text = $objFormField->name;
-                                                $cm_nr = 0;
-                                            }
-                                            else {
-                                                $cm_nr++;
-                                            }
-                                            $arrFields[$cm_text . '~'. $cm_nr] = $cm_text . '~'. $cm_nr;          // Feldname mit Option
-                                            break;
-            }
-        }
-
-        if( version_compare(PHP_VERSION, '5.4.0') >= 0 ) {
-            asort( $arrFields, SORT_FLAG_CASE );    // Alphabetisch sortieren
-        }
-        else {
-            asort( $arrFields );                    // Alphabetisch sortieren, Groß/Kleinschreibung erst ab PHP 5.4
-        }
-
-        return $arrFields;
+        $objForm = $this->Database->prepare("SELECT pid FROM tl_pdff_positions WHERE id=?")
+                                  ->execute($dc->currentRecord);
+                                  
+        if( $objForm->numRows < 1 ) return array();
+        
+        return Softleister\Pdfforms\PdfformsHelper::getFormFields( $objForm->pid );
     }
 
 

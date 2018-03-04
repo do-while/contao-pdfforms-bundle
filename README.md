@@ -29,6 +29,7 @@ composer require do-while/contao-pdfforms-bundle
 * 1.0.0<br>Freigabedatum: 2018-02-09<br>Version für Contao ab Version 4.4 LTS
 * 1.1.0<br>Freigabedatum: 2018-02-22<br>InsertTag {{pdf_forms::password_random}}, Simple-Token ##openpassword##
 * 1.2.0<br>Freigabedatum: 2018-02-25<br>Leere Seiten werden unterdrückt, wenn nicht "Alle Vorlagenseiten übernehmen" angehakt
+* 1.3.0<br>Freigabedatum: 2018-03-04<br>Neues Feature: Mehrformular-Vorlagen
 
 
 **Problem melden | *Report Problem*:**<br>per E-Mail | *via Email*: licence@softleister.de

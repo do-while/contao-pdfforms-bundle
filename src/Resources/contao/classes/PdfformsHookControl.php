@@ -13,8 +13,6 @@
 
 namespace Softleister\Pdfforms;
 
-require_once( 'PdfformsHelper.php' );
-
 //-----------------------------------------------------------------
 //  HookControl-Klasse
 //-----------------------------------------------------------------
@@ -67,6 +65,7 @@ class PdfformsHookControl extends \Backend
                          'openpassword'  => \Controller::replaceInsertTags( \Encryption::decrypt($objForm->pdff_openpassword) ),
                          'protectflags'  => deserialize($objForm->pdff_protectflags),
                          'password'      => \Controller::replaceInsertTags( \Encryption::decrypt($objForm->pdff_password) ),
+                         'multiform'     => deserialize($objForm->pdff_multiform),
                          'allpages'      => $objForm->pdff_allpages,
                          'offset'        => deserialize($objForm->pdff_offset),
                          'textcolor'     => $objForm->pdff_textcolor,
