@@ -11,7 +11,7 @@
  */
 
 define('PDFFORMS_VERSION', '1.3');
-define('PDFFORMS_BUILD'  , '0');
+define('PDFFORMS_BUILD'  , '1');
 
 /**
  * Back end modules

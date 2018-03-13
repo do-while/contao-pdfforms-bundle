@@ -13,6 +13,8 @@
 
 namespace Softleister\Pdfforms;
 
+require_once( 'PdfformsHelper.php' );
+
 //-----------------------------------------------------------------
 //  HookControl-Klasse
 //-----------------------------------------------------------------
