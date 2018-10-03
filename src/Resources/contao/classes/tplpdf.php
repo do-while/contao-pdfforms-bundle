@@ -15,7 +15,7 @@ namespace Softleister\Pdfforms;
 //-----------------------------------------------------------------
 //  add special AddPage to class
 //-----------------------------------------------------------------
-class TPLPDF extends \FPDI
+class TPLPDF extends \setasign\Fpdi\TcpdfFpdi
 {
     /**
      * Actual num_pages

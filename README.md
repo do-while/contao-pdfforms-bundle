@@ -30,9 +30,10 @@ composer require do-while/contao-pdfforms-bundle
 * 1.1.0<br>Freigabedatum: 2018-02-22<br>InsertTag {{pdf_forms::password_random}}, Simple-Token ##openpassword##
 * 1.2.0<br>Freigabedatum: 2018-02-25<br>Leere Seiten werden unterdrückt, wenn nicht "Alle Vorlagenseiten übernehmen" angehakt
 * 1.3.0<br>Freigabedatum: 2018-03-04<br>Neues Feature: Mehrformular-Vorlagen
+* 1.4.0<br>Freigabedatum: 2018-10-03<br>Kompatibilität mit PHP 7.2, mcrypt ersetzt<br>**Achtung** Die Passwörter in den Formulareigenschaften müssen neu gesetzt werden!
 
 
 **Problem melden | *Report Problem*:**<br>per E-Mail | *via Email*: licence@softleister.de
 
 ___
-Softleister - 2018-02-09
+Softleister - 2018-10-03

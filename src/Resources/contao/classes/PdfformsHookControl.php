@@ -64,22 +64,24 @@ class PdfformsHookControl extends \Backend
                          'handler'       => $objForm->pdff_handler,
                          'savepath'      => $savepath,
                          'protect'       => $objForm->pdff_protect,
-                         'openpassword'  => \Controller::replaceInsertTags( \Encryption::decrypt($objForm->pdff_openpassword) ),
+                         'openpassword'  => \Controller::replaceInsertTags( PdfformsHelper::decrypt($objForm->pdff_openpassword) ),
                          'protectflags'  => deserialize($objForm->pdff_protectflags),
-                         'password'      => \Controller::replaceInsertTags( \Encryption::decrypt($objForm->pdff_password) ),
+                         'password'      => \Controller::replaceInsertTags( PdfformsHelper::decrypt($objForm->pdff_password) ),
                          'multiform'     => deserialize($objForm->pdff_multiform),
                          'allpages'      => $objForm->pdff_allpages,
-                         'offset'        => deserialize($objForm->pdff_offset),
+                         'offset'        => array(0, 0),
                          'textcolor'     => $objForm->pdff_textcolor,
                          'title'         => $objForm->pdff_title,
                          'author'        => $objForm->pdff_author,
                          'arrFields'     => $arrFields,
                        );
         unset( $arrFields );
-        if( !is_numeric($arrPDF['offset'][0] ) ) $arrPDF['offset'][0] = 0;
-        if( !is_numeric($arrPDF['offset'][1] ) ) $arrPDF['offset'][1] = 0;
-
         if( !is_array($arrPDF['protectflags']) ) $arrPDF['protectflags'] = array( $arrPDF['protectflags'] );
+
+        // Offsets eintragen, wenn angegeben
+        $ofs = deserialize($objForm->pdff_offset);
+        if( isset($ofs[0]) && is_numeric($ofs[0]) ) $arrPDF['offset'][0] = $ofs[0];
+        if( isset($ofs[1]) && is_numeric($ofs[1]) ) $arrPDF['offset'][1] = $ofs[1];
 
         // HOOK: before pdf generation
         if( isset($GLOBALS['TL_HOOKS']['pdf_formsBeforePdf']) && \is_array($GLOBALS['TL_HOOKS']['pdf_formsBeforePdf']) ) {
@@ -89,12 +91,6 @@ class PdfformsHookControl extends \Backend
         }
 
         //--- PDF-Datei erstellen und speichern ---
-
-        // Include library
-        require_once( TL_ROOT . '/system/config/tcpdf.php' );           // TCPDF-Konfiguration von Contao
-        require_once( K_PATH_MAIN . 'tcpdf.php' );                      // Standard TCPDF
-        require_once( TL_ROOT . '/vendor/setasign/fpdi/fpdi.php' );     // FPDI-Erweiterung
-
         if( PdfformsHelper::pdfforms( 'S', $arrPDF, $pdfdatei ) ) {
 
             //--- PDF-Datei in der Dateiverwaltung eintragen ---

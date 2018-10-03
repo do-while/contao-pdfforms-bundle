@@ -144,19 +144,23 @@ $GLOBALS['TL_DCA']['tl_form']['fields']['pdff_protect'] = array (
 );
 
 $GLOBALS['TL_DCA']['tl_form']['fields']['pdff_openpassword'] = array (
-    'label'     => &$GLOBALS['TL_LANG']['tl_form']['pdff_openpassword'],
-    'exclude'   => true,
-    'inputType' => 'text',
-    'eval'      => array('preserveTags'=>true, 'encrypt'=>true, 'tl_class'=>'w50'),
-    'sql'       => "varchar(128) NOT NULL default ''"
+    'label'         => &$GLOBALS['TL_LANG']['tl_form']['pdff_openpassword'],
+    'exclude'       => true,
+    'inputType'     => 'text',
+    'load_callback' => array( array('Softleister\Pdfforms\PdfformsHelper', 'decrypt') ),
+    'save_callback' => array( array('Softleister\Pdfforms\PdfformsHelper', 'encrypt') ),
+    'eval'          => array('preserveTags'=>true, 'tl_class'=>'w50'),
+    'sql'           => "varchar(255) NOT NULL default ''"
 );
 
 $GLOBALS['TL_DCA']['tl_form']['fields']['pdff_password'] = array (
-    'label'     => &$GLOBALS['TL_LANG']['tl_form']['pdff_password'],
-    'exclude'   => true,
-    'inputType' => 'text',
-    'eval'      => array('preserveTags'=>true, 'encrypt'=>true, 'tl_class'=>'clr w50'),
-    'sql'       => "varchar(128) NOT NULL default ''"
+    'label'         => &$GLOBALS['TL_LANG']['tl_form']['pdff_password'],
+    'exclude'       => true,
+    'inputType'     => 'text',
+    'load_callback' => array( array('Softleister\Pdfforms\PdfformsHelper', 'decrypt') ),
+    'save_callback' => array( array('Softleister\Pdfforms\PdfformsHelper', 'encrypt') ),
+    'eval'          => array('preserveTags'=>true, 'tl_class'=>'clr w50'),
+    'sql'           => "varchar(255) NOT NULL default ''"
 );
 
 $GLOBALS['TL_DCA']['tl_form']['fields']['pdff_protectflags'] = array (
