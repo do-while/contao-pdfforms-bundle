@@ -126,11 +126,13 @@ class PdfformsHookControl extends \Backend
                 $arrTokens['form_'.$key] = $val;
                 $arrTokens['raw_data'] .= (isset($arrLabels[$key]) ? $arrLabels[$key] : ucfirst($key)) . ': ' . (is_array($val) ? implode(', ', $val) : $val) . "\n";
             }
-            foreach( $_SESSION['FILES'] as $key=>$val ) {
-                if( $key === 'pdfattachment' ) continue;
-
-                $arrTokens['form_'.$key] = \NotificationCenter\Util\Form::getFileUploadPathForToken( $val );
-                $arrTokens['raw_data'] .= (isset($arrLabels[$key]) ? $arrLabels[$key] : ucfirst($key)) . ': ' . $val['name'] . "\n";
+            if( is_array($_SESSION['FILES']) ) {
+                foreach( $_SESSION['FILES'] as $key=>$val ) {
+                    if( $key === 'pdfattachment' ) continue;
+    
+                    $arrTokens['form_'.$key] = \NotificationCenter\Util\Form::getFileUploadPathForToken( $val );
+                    $arrTokens['raw_data'] .= (isset($arrLabels[$key]) ? $arrLabels[$key] : ucfirst($key)) . ': ' . $val['name'] . "\n";
+                }
             }
 
             $objNotification = \NotificationCenter\Model\Notification::findByPk( $objForm->pdff_notification );
