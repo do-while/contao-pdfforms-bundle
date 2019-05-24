@@ -26,14 +26,15 @@ composer require do-while/contao-pdfforms-bundle
 
 
 ## Version
-* 1.0.0<br>Freigabedatum: 2018-02-09<br>Version für Contao ab Version 4.4 LTS
-* 1.1.0<br>Freigabedatum: 2018-02-22<br>InsertTag {{pdf_forms::password_random}}, Simple-Token ##openpassword##
-* 1.2.0<br>Freigabedatum: 2018-02-25<br>Leere Seiten werden unterdrückt, wenn nicht "Alle Vorlagenseiten übernehmen" angehakt
-* 1.3.0<br>Freigabedatum: 2018-03-04<br>Neues Feature: Mehrformular-Vorlagen
+* 1.5.0<br>Freigabedatum: 2019-05-24<br>1) Lauffähig in Contao >=4.7, Problematik: TCPDF ist jetzt ein Bundle
 * 1.4.0<br>Freigabedatum: 2018-10-03<br>Kompatibilität mit PHP 7.2, mcrypt ersetzt<br>**Achtung** Die Passwörter in den Formulareigenschaften müssen neu gesetzt werden!
+* 1.3.0<br>Freigabedatum: 2018-03-04<br>Neues Feature: Mehrformular-Vorlagen
+* 1.2.0<br>Freigabedatum: 2018-02-25<br>Leere Seiten werden unterdrückt, wenn nicht "Alle Vorlagenseiten übernehmen" angehakt
+* 1.1.0<br>Freigabedatum: 2018-02-22<br>InsertTag {{pdf_forms::password_random}}, Simple-Token ##openpassword##
+* 1.0.0<br>Freigabedatum: 2018-02-09<br>Version für Contao ab Version 4.4 LTS
 
 
 **Problem melden | *Report Problem*:**<br>per E-Mail | *via Email*: licence@softleister.de
 
 ___
-Softleister - 2018-10-03
+Softleister - 2019-05-24

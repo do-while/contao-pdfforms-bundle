@@ -90,6 +90,32 @@ class PdfformsHookControl extends \Backend
             }
         }
 
+
+        //-- Include Settings
+        $tcpdfinit = \Config::get("pdftemplateTcpdf");
+
+        // 1: Own settings addressed via app/config/config.yml
+        if( !empty($tcpdfinit) && file_exists(TL_ROOT . '/' . $tcpdfinit) ) {
+            require_once(TL_ROOT . '/' . $tcpdfinit);
+        }
+        // 2: Own tcpdf.php from files directory
+        else if( file_exists(TL_ROOT . '/files/tcpdf.php') ) {
+            require_once(TL_ROOT . '/files/tcpdf.php');
+        }
+        // 3: From config directory (up to Contao 4.6)
+        else if( file_exists(TL_ROOT . '/vendor/contao/core-bundle/src/Resources/contao/config/tcpdf.php') ) {
+            require_once(TL_ROOT . '/vendor/contao/core-bundle/src/Resources/contao/config/tcpdf.php');
+        }
+        // 4: From config directory of tcpdf-bundle (from Contao 4.7)
+        else if( file_exists(TL_ROOT . '/vendor/contao/tcpdf-bundle/src/Resources/contao/config/tcpdf.php') ) {
+            require_once(TL_ROOT . '/vendor/contao/tcpdf-bundle/src/Resources/contao/config/tcpdf.php');
+        }
+        // 5: not found? - Then take it from this extension
+        else {
+            require_once(TL_ROOT . '/vendor/do-while/contao-pdfforms-bundle/src/Resources/contao/config/tcpdf.php');
+        }
+
+
         //--- PDF-Datei erstellen und speichern ---
         if( PdfformsHelper::pdfforms( 'S', $arrPDF, $pdfdatei ) ) {
 
