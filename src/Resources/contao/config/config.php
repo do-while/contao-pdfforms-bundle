@@ -10,8 +10,8 @@
  * @see	       https://github.com/do-while/contao-pdfforms-bundle
  */
 
-define('PDFFORMS_VERSION', '1.3');
-define('PDFFORMS_BUILD'  , '1');
+define('PDFFORMS_VERSION', '1.5');
+define('PDFFORMS_BUILD'  , '2');
 
 /**
  * Back end modules
@@ -34,7 +34,7 @@ $GLOBALS['TL_HOOKS']['replaceInsertTags'][]  = array('Softleister\Pdfforms\Pdffo
 $GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['pdf_forms'] = array
 (
     'pdf_form_transmit' => array(
-            'recipients'            => array('admin_email', 'form_*'),      // Empfänger
+            'recipients'            => array('admin_email', 'form_*'),      // Empfï¿½nger
             'email_subject'         => array('form_*', 'admin_email'),      // Betreff
             'email_text'            => array('form_*', 'raw_data', 'openpassword', 'admin_email'),
             'email_html'            => array('form_*', 'raw_data', 'openpassword', 'admin_email'),

@@ -26,6 +26,7 @@ composer require do-while/contao-pdfforms-bundle
 
 
 ## Version
+* 1.5.2<br>Freigabedatum: 2020-03-19<br>Warnings in PHP 7.3 beseitigt
 * 1.5.0<br>Freigabedatum: 2019-05-24<br>1) Lauffähig in Contao >=4.7, Problematik: TCPDF ist jetzt ein Bundle
 * 1.4.0<br>Freigabedatum: 2018-10-03<br>Kompatibilität mit PHP 7.2, mcrypt ersetzt<br>**Achtung** Die Passwörter in den Formulareigenschaften müssen neu gesetzt werden!
 * 1.3.0<br>Freigabedatum: 2018-03-04<br>Neues Feature: Mehrformular-Vorlagen
