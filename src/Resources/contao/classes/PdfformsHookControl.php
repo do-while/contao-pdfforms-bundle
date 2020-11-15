@@ -161,13 +161,15 @@ class PdfformsHookControl extends \Backend
                 }
             }
 
-            $objNotification = \NotificationCenter\Model\Notification::findByPk( $objForm->pdff_notification );
-            if (null !== $objNotification) {
-                $objNotification->send( $arrTokens, $GLOBALS['TL_LANGUAGE'] );
-            }
-            else {
-                \System::log('No notification "pdf_form_transmit" found!', __METHOD__, TL_FORMS);
-                return;
+            if( $objForm->pdff_notification > 0 ) {             // IF() notification defined )
+                $objNotification = \NotificationCenter\Model\Notification::findByPk( $objForm->pdff_notification );
+                if (null !== $objNotification) {
+                    $objNotification->send( $arrTokens, $GLOBALS['TL_LANGUAGE'] );
+                }
+                else {
+                    \System::log('No notification "pdf_form_transmit" found!', __METHOD__, TL_FORMS);
+                    return;
+                }
             }
         }
 
