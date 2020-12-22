@@ -30,6 +30,10 @@ $GLOBALS['TL_LANG']['tl_form']['pdff_fileext']        = array('Expand file name'
 $GLOBALS['TL_LANG']['tl_form']['pdff_multiform']      = array('Multi-form template', 'If the template file contains different forms, applicable pages can be defined here, e.g. 1-4,7,10. Leave the fields blank to use all pages.');
 $GLOBALS['TL_LANG']['tl_form']['multiform_bedingung'] = array('Condition', 'If the condition is fulfilled, only the specified pages are used for the PDF output.');
 $GLOBALS['TL_LANG']['tl_form']['multiform_seiten']    = array('Pages from the PDF template', 'Specify a list of the corresponding pages separated by commas or as range specifications, e. g. 1-4,7,10');
+$GLOBALS['TL_LANG']['tl_form']['pdff_font']           = array('Custom font (regular)', 'Select your font file for the regular font or leave the field empty for the default font.');
+$GLOBALS['TL_LANG']['tl_form']['pdff_fontb']          = array('Custom font (bold)', 'Select your font file for the bold font or leave the field empty for the default font.');
+$GLOBALS['TL_LANG']['tl_form']['pdff_fonti']          = array('Custom font (italic)', 'Select your font file for the italic font or leave the field empty for the default font.');
+$GLOBALS['TL_LANG']['tl_form']['pdff_fontbi']         = array('Custom font (bold+italic)', 'Select your font file for the bold italic font or leave the field empty for the default font.');
 
 /**
  * References
@@ -55,3 +59,4 @@ $GLOBALS['TL_LANG']['tl_form']['positions']  = array('Positions', 'Definition of
  * Legends
  */
 $GLOBALS['TL_LANG']['tl_form']['pdff_legend']  = 'Fill in PDF form';
+$GLOBALS['TL_LANG']['tl_form']['pdff_fontlegend'] = 'Use your own fonts';

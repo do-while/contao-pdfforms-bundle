@@ -13,7 +13,7 @@
 require_once( TL_ROOT . '/vendor/do-while/contao-pdfforms-bundle/src/Resources/contao/classes/PdfformsHelper.php' );
 
 // Subpalette hinzufügen
-$GLOBALS['TL_DCA']['tl_form']['subpalettes']['pdff_on']      = 'pdff_vorlage,pdff_handler,pdff_savepath,pdff_fileext,pdff_notification,pdff_multiform,pdff_allpages,pdff_offset,pdff_textcolor,pdff_title,pdff_author,pdff_protect';
+$GLOBALS['TL_DCA']['tl_form']['subpalettes']['pdff_on']      = 'pdff_vorlage,pdff_handler,pdff_savepath,pdff_fileext,pdff_notification,pdff_multiform,pdff_allpages,pdff_offset,pdff_textcolor,pdff_title,pdff_author,pdff_protect;{pdff_fontlegend:hide},pdff_font,pdff_fontb,pdff_fonti,pdff_fontbi';
 $GLOBALS['TL_DCA']['tl_form']['subpalettes']['pdff_protect'] = 'pdff_password,pdff_openpassword,pdff_protectflags';
 
 // Selector hinzufügen
@@ -200,6 +200,38 @@ $GLOBALS['TL_DCA']['tl_form']['fields']['pdff_multiform'] = array (
             )
     ),
     'sql'                     => "mediumtext NULL"
+);
+
+$GLOBALS['TL_DCA']['tl_form']['fields']['pdff_font'] = array (
+    'label'     => &$GLOBALS['TL_LANG']['tl_form']['pdff_font'],
+    'exclude'   => true,
+    'inputType' => 'fileTree',
+    'eval'      => array('filesOnly'=>true, 'fieldType'=>'radio', 'tl_class'=>'clr w50', 'extensions'=>'ttf,otf'),
+    'sql'       => "binary(16) NULL",
+);
+
+$GLOBALS['TL_DCA']['tl_form']['fields']['pdff_fontb'] = array (
+    'label'     => &$GLOBALS['TL_LANG']['tl_form']['pdff_fontb'],
+    'exclude'   => true,
+    'inputType' => 'fileTree',
+    'eval'      => array('filesOnly'=>true, 'fieldType'=>'radio', 'tl_class'=>'w50', 'extensions'=>'ttf,otf'),
+    'sql'       => "binary(16) NULL",
+);
+
+$GLOBALS['TL_DCA']['tl_form']['fields']['pdff_fonti'] = array (
+    'label'     => &$GLOBALS['TL_LANG']['tl_form']['pdff_fonti'],
+    'exclude'   => true,
+    'inputType' => 'fileTree',
+    'eval'      => array('filesOnly'=>true, 'fieldType'=>'radio', 'tl_class'=>'w50', 'extensions'=>'ttf,otf'),
+    'sql'       => "binary(16) NULL",
+);
+
+$GLOBALS['TL_DCA']['tl_form']['fields']['pdff_fontbi'] = array (
+    'label'     => &$GLOBALS['TL_LANG']['tl_form']['pdff_fontbi'],
+    'exclude'   => true,
+    'inputType' => 'fileTree',
+    'eval'      => array('filesOnly'=>true, 'fieldType'=>'radio', 'tl_class'=>'w50', 'extensions'=>'ttf,otf'),
+    'sql'       => "binary(16) NULL",
 );
 
 
