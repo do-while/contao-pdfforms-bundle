@@ -3,15 +3,12 @@
 /**
  * Extension for Contao 4
  *
- * @copyright  Softleister 2014-2018
+ * @copyright  Softleister 2014-2020
  * @author     Softleister <info@softleister.de>
  * @package    contao-pdfforms-bundle
  * @licence    LGPL
  * @see	       https://github.com/do-while/contao-pdfforms-bundle
  */
-
-define('PDFFORMS_VERSION', '1.5');
-define('PDFFORMS_BUILD'  , '3');
 
 /**
  * Back end modules
@@ -34,7 +31,7 @@ $GLOBALS['TL_HOOKS']['replaceInsertTags'][]  = array('Softleister\Pdfforms\Pdffo
 $GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['pdf_forms'] = array
 (
     'pdf_form_transmit' => array(
-            'recipients'            => array('admin_email', 'form_*'),      // Empf�nger
+            'recipients'            => array('admin_email', 'form_*'),      // Empfänger
             'email_subject'         => array('form_*', 'admin_email'),      // Betreff
             'email_text'            => array('form_*', 'raw_data', 'openpassword', 'admin_email'),
             'email_html'            => array('form_*', 'raw_data', 'openpassword', 'admin_email'),
