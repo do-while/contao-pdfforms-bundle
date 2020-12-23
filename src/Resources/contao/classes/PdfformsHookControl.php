@@ -76,7 +76,7 @@ class PdfformsHookControl extends \Backend
                          'R'             => \FilesModel::findByUuid($objForm->pdff_font)->path,
                          'B'             => \FilesModel::findByUuid($objForm->pdff_fontb)->path,
                          'I'             => \FilesModel::findByUuid($objForm->pdff_fonti)->path,
-                         'BI'            => \FilesModel::findByUuid($objForm->pdff_fontbi)->path,
+                         'IB'            => \FilesModel::findByUuid($objForm->pdff_fontbi)->path,
                          'arrFields'     => $arrFields,
                        );
         unset( $arrFields );
