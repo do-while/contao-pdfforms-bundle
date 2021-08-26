@@ -3,7 +3,7 @@
 /**
  * Extension for Contao 4
  *
- * @copyright  Softleister 2014-2018
+ * @copyright  Softleister 2014-2021
  * @author     Softleister <info@softleister.de>
  * @package    contao-pdfforms-bundle
  * @licence    LGPL
@@ -18,7 +18,7 @@ require_once( 'PdfformsHelper.php' );
 //-----------------------------------------------------------------
 //  HookControl-Klasse
 //-----------------------------------------------------------------
-class PdfformsHookControl extends \Backend
+class PdfformsHookControl extends \Contao\Backend
 {
     //-----------------------------------------------------------------
     //  myPrepareFormData:    Formulardaten vorverarbeiten
@@ -28,7 +28,7 @@ class PdfformsHookControl extends \Backend
         if( $objForm->pdff_on != '1' ) return;              // PDF-Forms abgeschaltet!
 
         // Aufbau eines Feldes mit den Feldtypen
-        $db = \Database::getInstance();
+        $db = \Contao\Database::getInstance();
         $objFields = $db->prepare("SELECT name, type FROM tl_form_field WHERE invisible<>1 AND pid=?")
                         ->execute($objForm->id);
 
@@ -47,8 +47,8 @@ class PdfformsHookControl extends \Backend
             $arrFields[$widgetName]['orig']  = $key;                    // Original Feldname
         }
 
-        $filename = standardize(\StringUtil::restoreBasicEntities($objForm->title)) . $this->replaceInsertTags($objForm->pdff_fileext, false);
-        $savepath = \FilesModel::findByUuid($objForm->pdff_savepath)->path;
+        $filename = \Contao\StringUtil::standardize(\Contao\StringUtil::restoreBasicEntities($objForm->title)) . $this->replaceInsertTags($objForm->pdff_fileext, false);
+        $savepath = \Contao\FilesModel::findByUuid($objForm->pdff_savepath)->path;
         if( file_exists(TL_ROOT . '/' . $savepath . '/' . $filename . '.pdf') ) {
             $i = 2;
             while( file_exists(TL_ROOT . '/' . $savepath . '/' . $filename . '-' . $i . '.pdf') ) $i++;
@@ -60,43 +60,43 @@ class PdfformsHookControl extends \Backend
         $arrPDF = array( 'formid'        => $objForm->id,
                          'formtitle'     => $objForm->title,
                          'filename'      => $filename,
-                         'vorlage'       => \FilesModel::findByUuid($objForm->pdff_vorlage)->path,
+                         'vorlage'       => \Contao\FilesModel::findByUuid($objForm->pdff_vorlage)->path,
                          'handler'       => $objForm->pdff_handler,
                          'savepath'      => $savepath,
                          'protect'       => $objForm->pdff_protect,
-                         'openpassword'  => \Controller::replaceInsertTags( PdfformsHelper::decrypt($objForm->pdff_openpassword) ),
-                         'protectflags'  => deserialize($objForm->pdff_protectflags),
-                         'password'      => \Controller::replaceInsertTags( PdfformsHelper::decrypt($objForm->pdff_password) ),
-                         'multiform'     => deserialize($objForm->pdff_multiform),
+                         'openpassword'  => \Contao\Controller::replaceInsertTags( PdfformsHelper::decrypt($objForm->pdff_openpassword) ),
+                         'protectflags'  => \Contao\StringUtil::deserialize($objForm->pdff_protectflags),
+                         'password'      => \Contao\Controller::replaceInsertTags( PdfformsHelper::decrypt($objForm->pdff_password) ),
+                         'multiform'     => \Contao\StringUtil::deserialize($objForm->pdff_multiform),
                          'allpages'      => $objForm->pdff_allpages,
                          'offset'        => array(0, 0),
                          'textcolor'     => $objForm->pdff_textcolor,
                          'title'         => $objForm->pdff_title,
                          'author'        => $objForm->pdff_author,
-                         'R'             => \FilesModel::findByUuid($objForm->pdff_font)->path,
-                         'B'             => \FilesModel::findByUuid($objForm->pdff_fontb)->path,
-                         'I'             => \FilesModel::findByUuid($objForm->pdff_fonti)->path,
-                         'IB'            => \FilesModel::findByUuid($objForm->pdff_fontbi)->path,
+                         'R'             => \Contao\FilesModel::findByUuid($objForm->pdff_font)->path,
+                         'B'             => \Contao\FilesModel::findByUuid($objForm->pdff_fontb)->path,
+                         'I'             => \Contao\FilesModel::findByUuid($objForm->pdff_fonti)->path,
+                         'IB'            => \Contao\FilesModel::findByUuid($objForm->pdff_fontbi)->path,
                          'arrFields'     => $arrFields,
                        );
         unset( $arrFields );
         if( !is_array($arrPDF['protectflags']) ) $arrPDF['protectflags'] = array( $arrPDF['protectflags'] );
 
         // Offsets eintragen, wenn angegeben
-        $ofs = deserialize($objForm->pdff_offset);
+        $ofs = \Contao\StringUtil::deserialize($objForm->pdff_offset);
         if( isset($ofs[0]) && is_numeric($ofs[0]) ) $arrPDF['offset'][0] = $ofs[0];
         if( isset($ofs[1]) && is_numeric($ofs[1]) ) $arrPDF['offset'][1] = $ofs[1];
 
         // HOOK: before pdf generation
         if( isset($GLOBALS['TL_HOOKS']['pdf_formsBeforePdf']) && \is_array($GLOBALS['TL_HOOKS']['pdf_formsBeforePdf']) ) {
             foreach( $GLOBALS['TL_HOOKS']['pdf_formsBeforePdf'] as $callback ) {
-                $arrPDF = \System::importStatic($callback[0])->{$callback[1]}( $arrPDF, $this );
+                $arrPDF = \Contao\System::importStatic($callback[0])->{$callback[1]}( $arrPDF, $this );
             }
         }
 
 
         //-- Include Settings
-        $tcpdfinit = \Config::get("pdftemplateTcpdf");
+        $tcpdfinit = \Contao\Config::get("pdftemplateTcpdf");
 
         // 1: Own settings addressed via app/config/config.yml
         if( !empty($tcpdfinit) && file_exists(TL_ROOT . '/' . $tcpdfinit) ) {
@@ -124,8 +124,8 @@ class PdfformsHookControl extends \Backend
         if( PdfformsHelper::pdfforms( 'S', $arrPDF, $pdfdatei ) ) {
 
             //--- PDF-Datei in der Dateiverwaltung eintragen ---
-            $objFile = \Dbafs::addResource( $pdfdatei );                // Datei in der Dateiverwaltung eintragen
-            \Dbafs::updateFolderHashes( $strUploadFolder );
+            $objFile = \Contao\Dbafs::addResource( $pdfdatei );                // Datei in der Dateiverwaltung eintragen
+            \Contao\Dbafs::updateFolderHashes( $strUploadFolder );
 
             //--- PDF-Datei wenn gefordert als E-Mail-Anhang bereitstellen ---
             if( $arrPDF['handler'] === 'email' ) {                      //=== Datei an die E-Mail anhängen? ===
@@ -136,7 +136,7 @@ class PdfformsHookControl extends \Backend
                     'error'     =>  0,
                     'size'      =>  filesize( TL_ROOT . '/' . $pdfdatei ),
                     'uploaded'  =>  false,
-                    'uuid'      =>  \StringUtil::binToUuid( $objFile->uuid )
+                    'uuid'      =>  \Contao\StringUtil::binToUuid( $objFile->uuid )
                 );
             }
         }
@@ -171,7 +171,7 @@ class PdfformsHookControl extends \Backend
                     $objNotification->send( $arrTokens, $GLOBALS['TL_LANGUAGE'] );
                 }
                 else {
-                    \System::log('No notification "pdf_form_transmit" found!', __METHOD__, TL_FORMS);
+                    \Contao\System::log('No notification "pdf_form_transmit" found!', __METHOD__, TL_FORMS);
                     return;
                 }
             }
@@ -180,7 +180,7 @@ class PdfformsHookControl extends \Backend
         // HOOK: after pdf generation
         if( isset($GLOBALS['TL_HOOKS']['pdf_formsAfterPdf']) && \is_array($GLOBALS['TL_HOOKS']['pdf_formsAfterPdf']) ) {
             foreach( $GLOBALS['TL_HOOKS']['pdf_formsAfterPdf'] as $callback ) {
-                \System::importStatic($callback[0])->{$callback[1]}( $pdfdatei, $arrPDF, $this );
+                \Contao\System::importStatic($callback[0])->{$callback[1]}( $pdfdatei, $arrPDF, $this );
             }
         }
 
@@ -199,7 +199,7 @@ class PdfformsHookControl extends \Backend
         $tag = explode( '::', $strTag );
         if( $tag[0] !== 'pdf_forms' ) return false;                             // nicht zuständig für diese InsertTags
 
-        if( strtolower($tag[1] == 'pdfdocument' ) ) {
+        if( strtolower($tag[1] === 'pdfdocument' ) ) {
             if( !isset($_SESSION['pdf_forms']['pdfdocument']) ) return false;   // bisher kein Dokument erstellt
 
             if( !isset($tag[2]) ) $tag[2] = '';                                 // kein 3. Parameter angegeben, mit default ergänzen

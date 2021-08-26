@@ -3,7 +3,7 @@
 /**
  * Extension for Contao 4
  *
- * @copyright  Softleister 2014-2018
+ * @copyright  Softleister 2014-2021
  * @author     Softleister <info@softleister.de>
  * @package    contao-pdfforms-bundle
  * @licence    LGPL
@@ -15,8 +15,6 @@ namespace Softleister\PdfformsBundle\ContaoManager;
 use Contao\ManagerPlugin\Bundle\Config\BundleConfig;
 use Contao\ManagerPlugin\Bundle\BundlePluginInterface;
 use Contao\ManagerPlugin\Bundle\Parser\ParserInterface;
-//use Symfony\Component\Config\Loader\LoaderResolverInterface;
-//use Symfony\Component\HttpKernel\KernelInterface;
 
 
 /**

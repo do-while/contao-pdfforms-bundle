@@ -3,7 +3,7 @@
 /**
  * Extension for Contao 4
  *
- * @copyright  Softleister 2014-2018
+ * @copyright  Softleister 2014-2021
  * @author     Softleister <info@softleister.de>
  * @package    contao-pdfforms-bundle
  * @licence    LGPL
@@ -248,7 +248,7 @@ class tl_pdff_form extends \tl_form
     {
         $arrChoices = array();
         if( class_exists( 'NotificationCenter\tl_form' ) ) {
-            $objNotifications = \Database::getInstance()->execute("SELECT id,title FROM tl_nc_notification WHERE type='pdf_form_transmit' ORDER BY title");
+            $objNotifications = \Contao\Database::getInstance()->execute("SELECT id,title FROM tl_nc_notification WHERE type='pdf_form_transmit' ORDER BY title");
     
             while ($objNotifications->next()) {
                 $arrChoices[$objNotifications->id] = $objNotifications->title;

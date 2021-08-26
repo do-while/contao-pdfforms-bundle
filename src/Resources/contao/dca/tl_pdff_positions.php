@@ -3,7 +3,7 @@
 /**
  * Extension for Contao 4
  *
- * @copyright  Softleister 2014-2018
+ * @copyright  Softleister 2014-2021
  * @author     Softleister <info@softleister.de>
  * @package    contao-pdfforms-bundle
  * @licence    LGPL
@@ -243,7 +243,7 @@ $GLOBALS['TL_DCA']['tl_pdff_positions'] = array
 /**
  * Class tl_pdff_positions
  */
-class tl_pdff_positions extends Backend
+class tl_pdff_positions extends \Contao\Backend
 {
     /**
      * Import the back end user object
@@ -262,10 +262,10 @@ class tl_pdff_positions extends Backend
     public function listPositions($arrRow)
     {
         $pub = $arrRow['published'] ? 'color:#555' : 'color:#bbb';
-        $pos = deserialize($arrRow['posxy']);
-        $items = deserialize($arrRow['textitems']);
+        $pos = \Contao\StringUtil::deserialize($arrRow['posxy']);
+        $items = \Contao\StringUtil::deserialize($arrRow['textitems']);
 
-        $style = deserialize($arrRow['fontstyle']);
+        $style = \Contao\StringUtil::deserialize($arrRow['fontstyle']);
         $text = (is_array($style) && in_array('bold', $style) ? '<strong>' : '') . (is_array($style) && in_array('italic', $style) ? '<em>' : '');
         foreach($items as $item) $text .= $item['feld'] . '<br>';
         $text .= (is_array($style) && in_array('italic', $style) ? '</em>' : '') . (is_array($style) && in_array('bold', $style) ? '</strong>' : '');
@@ -284,8 +284,8 @@ class tl_pdff_positions extends Backend
     //-----------------------------------------------------------------
     public function toggleIcon( $row, $href, $label, $title, $icon, $attributes )
     {
-        if( strlen(Input::get('tid')) ) {
-            $this->toggleVisibility( Input::get('tid'), (Input::get('state') == 1) );
+        if( strlen(\Contao\Input::get('tid')) ) {
+            $this->toggleVisibility( \Contao\Input::get('tid'), (\Contao\Input::get('state') == 1) );
             $this->redirect( $this->getReferer() );
         }
 
@@ -295,7 +295,7 @@ class tl_pdff_positions extends Backend
             $icon = 'invisible.gif';
         }
 
-        return '<a href="'.$this->addToUrl($href).'" title="'.specialchars($title).'"'.$attributes.'>'.Image::getHtml($icon, $label).'</a> ';
+        return '<a href="' . $this->addToUrl($href) . '" title="' . \Contao\StringUtil::specialchars($title) . '"' . $attributes . '>' . \Contao\Image::getHtml($icon, $label) . '</a> ';
     }
 
 
@@ -304,7 +304,7 @@ class tl_pdff_positions extends Backend
     //-----------------------------------------------------------------
     public function toggleVisibility( $intId, $blnVisible )
     {
-        $objVersions = new Versions( 'tl_pdff_positions', $intId );
+        $objVersions = new \Contao\Versions( 'tl_pdff_positions', $intId );
         $objVersions->initialize( );
 
         // Trigger the save_callback

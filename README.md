@@ -26,6 +26,7 @@ composer require do-while/contao-pdfforms-bundle
 
 
 ## Version
+* 1.6.2<br>Freigabedatum: 2021-08-26<br>1) Kompatibilität mit PHP 8<br>2) Korrektur bei Entitities
 * 1.6.0<br>Freigabedatum: 2020-12-23<br>Erweitert um die Verwendung eigener Fonts
 * 1.5.2<br>Freigabedatum: 2020-03-19<br>Warnings in PHP 7.3 beseitigt
 * 1.5.0<br>Freigabedatum: 2019-05-24<br>1) Lauffähig in Contao >=4.7, Problematik: TCPDF ist jetzt ein Bundle
@@ -39,4 +40,4 @@ composer require do-while/contao-pdfforms-bundle
 **Problem melden | *Report Problem*:**<br>per E-Mail | *via Email*: licence@softleister.de
 
 ___
-Softleister - 2020-12-23
+Softleister - 2021-08-26
