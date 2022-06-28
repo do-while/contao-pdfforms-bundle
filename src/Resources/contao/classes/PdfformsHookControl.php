@@ -125,7 +125,6 @@ class PdfformsHookControl extends \Contao\Backend
 
             //--- PDF-Datei in der Dateiverwaltung eintragen ---
             $objFile = \Contao\Dbafs::addResource( $pdfdatei );                // Datei in der Dateiverwaltung eintragen
-            \Contao\Dbafs::updateFolderHashes( $strUploadFolder );
 
             //--- PDF-Datei wenn gefordert als E-Mail-Anhang bereitstellen ---
             if( $arrPDF['handler'] === 'email' ) {                      //=== Datei an die E-Mail anhängen? ===
