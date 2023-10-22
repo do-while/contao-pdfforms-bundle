@@ -3,7 +3,7 @@
 /**
  * Extension for Contao 4
  *
- * @copyright  Softleister 2014-2021
+ * @copyright  Softleister 2014-2023
  * @author     Softleister <info@softleister.de>
  * @package    contao-pdfforms-bundle
  * @licence    LGPL
@@ -12,25 +12,35 @@
 
 namespace Softleister\Pdfforms;
 
-require_once( TL_ROOT . '/vendor/do-while/contao-pdfforms-bundle/src/Resources/contao/classes/PdfformsHelper.php' );
+use Contao\Input;
+use Contao\Config;
+use Contao\System;
+use Contao\Backend;
+use Contao\Database;
+use Contao\Controller;
+use Contao\FilesModel;
+use Contao\StringUtil;
+
+
+require_once( 'PdfformsHelper.php' );
 
 //-----------------------------------------------------------------
 //  PdfformsTestPdf:    Testausgabe des PDF
 //-----------------------------------------------------------------
-class PdfformsTestPdf extends \Contao\Backend
+class PdfformsTestPdf extends Backend
 {
     //-----------------------------------------------------------------------------------
     //  Test-PDF erstellen
     //-----------------------------------------------------------------------------------
     public function testpdf( )
     {
-        if( \Contao\Input::get('key') !== 'testpdf' ) return '';        // Falscher Aufruf
+        if( Input::get('key') !== 'testpdf' ) return '';        // Falscher Aufruf
 
         // Formulareinstellungen laden
-        $db = \Contao\Database::getInstance();
+        $db = Database::getInstance();
         $objForm = $db->prepare("SELECT * FROM tl_form WHERE id=?")
                       ->limit(1)
-                      ->execute(\Contao\Input::get('id'));
+                      ->execute(Input::get('id'));
 
         if( ($objForm->numRows < 1) || ($objForm->pdff_on != '1') ) return '';  // PDF-Forms abgeschaltet!
 
@@ -55,31 +65,31 @@ class PdfformsTestPdf extends \Contao\Backend
 
         $arrPDF = array( 'formid'        => $objForm->id,
                          'formtitle'     => $objForm->title,
-                         'filename'      => \Contao\StringUtil::restoreBasicEntities($objForm->title),
-                         'vorlage'       => \Contao\FilesModel::findByUuid($objForm->pdff_vorlage)->path,
+                         'filename'      => StringUtil::restoreBasicEntities($objForm->title),
+                         'vorlage'       => FilesModel::findByUuid($objForm->pdff_vorlage)->path ?? '',
                          'handler'       => $objForm->pdff_handler,
-                         'savepath'      => \Contao\FilesModel::findByUuid($objForm->pdff_savepath)->path,
+                         'savepath'      => FilesModel::findByUuid($objForm->pdff_savepath)->path ?? '',
                          'protect'       => $objForm->pdff_protect,
-                         'openpassword'  => \Contao\Controller::replaceInsertTags( PdfformsHelper::decrypt($objForm->pdff_openpassword) ),
-                         'protectflags'  => \Contao\StringUtil::deserialize($objForm->pdff_protectflags),
-                         'password'      => \Contao\Controller::replaceInsertTags( PdfformsHelper::decrypt($objForm->pdff_password) ),
-                         'multiform'     => \Contao\StringUtil::deserialize($objForm->pdff_multiform),
+                         'openpassword'  => Controller::replaceInsertTags( PdfformsHelper::decrypt($objForm->pdff_openpassword) ),
+                         'protectflags'  => StringUtil::deserialize($objForm->pdff_protectflags),
+                         'password'      => Controller::replaceInsertTags( PdfformsHelper::decrypt($objForm->pdff_password) ),
+                         'multiform'     => StringUtil::deserialize($objForm->pdff_multiform),
                          'allpages'      => $objForm->pdff_allpages,
                          'offset'        => array(0, 0),
                          'textcolor'     => $objForm->pdff_textcolor,
                          'title'         => $objForm->pdff_title,
                          'author'        => $objForm->pdff_author,
-                         'R'             => \Contao\FilesModel::findByUuid($objForm->pdff_font)->path,
-                         'B'             => \Contao\FilesModel::findByUuid($objForm->pdff_fontb)->path,
-                         'I'             => \Contao\FilesModel::findByUuid($objForm->pdff_fonti)->path,
-                         'IB'            => \Contao\FilesModel::findByUuid($objForm->pdff_fontbi)->path,
+                         'R'             => FilesModel::findByUuid($objForm->pdff_font)->path ?? '',
+                         'B'             => FilesModel::findByUuid($objForm->pdff_fontb)->path ?? '',
+                         'I'             => FilesModel::findByUuid($objForm->pdff_fonti)->path ?? '',
+                         'IB'            => FilesModel::findByUuid($objForm->pdff_fontbi)->path ?? '',
                          'arrFields'     => $arrFields,
                         );
         unset( $arrFields );
         if( !is_array($arrPDF['protectflags']) ) $arrPDF['protectflags'] = array( $arrPDF['protectflags'] );
 
         // Offsets eintragen, wenn angegeben
-        $ofs = \Contao\StringUtil::deserialize($objForm->pdff_offset);
+        $ofs = StringUtil::deserialize($objForm->pdff_offset);
         if( isset($ofs[0]) && is_numeric($ofs[0]) ) $arrPDF['offset'][0] = $ofs[0];
         if( isset($ofs[1]) && is_numeric($ofs[1]) ) $arrPDF['offset'][1] = $ofs[1];
 
@@ -87,13 +97,13 @@ class PdfformsTestPdf extends \Contao\Backend
         // HOOK: before pdf generation
         if( isset($GLOBALS['TL_HOOKS']['pdf_formsBeforePdf']) && \is_array($GLOBALS['TL_HOOKS']['pdf_formsBeforePdf']) ) {
             foreach( $GLOBALS['TL_HOOKS']['pdf_formsBeforePdf'] as $callback ) {
-                $arrPDF = \Contao\System::importStatic($callback[0])->{$callback[1]}( $arrPDF, $this );
+                $arrPDF = System::importStatic($callback[0])->{$callback[1]}( $arrPDF, $this );
             }
         }
 
 
         //-- Include Settings
-        $tcpdfinit = \Contao\Config::get("pdftemplateTcpdf");
+        $tcpdfinit = Config::get("pdftemplateTcpdf");
 
         // 1: Own settings addressed via app/config/config.yml
         if( !empty($tcpdfinit) && file_exists(TL_ROOT . '/' . $tcpdfinit) ) {
