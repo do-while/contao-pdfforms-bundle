@@ -1,28 +1,28 @@
 <?php
 
+declare( strict_types=1 );
+
 /**
- * Extension for Contao 4
+ * Extension for Contao 5
  *
- * @copyright  Softleister 2014-2023
+ * @copyright  Softleister 2014-2024
  * @author     Softleister <info@softleister.de>
  * @package    contao-pdfforms-bundle
  * @licence    LGPL
  * @see        https://github.com/do-while/contao-pdfforms-bundle
  */
 
-namespace Softleister\Pdfforms;
+namespace Softleister\PdfformsBundle;
 
 use Contao\Input;
 use Contao\Config;
 use Contao\System;
 use Contao\Backend;
 use Contao\Database;
-use Contao\Controller;
 use Contao\FilesModel;
 use Contao\StringUtil;
-
-
-require_once( 'PdfformsHelper.php' );
+use Softleister\PdfformsBundle\PdfformsHelper;
+use Symfony\Component\VarDumper\VarDumper;
 
 //-----------------------------------------------------------------
 //  PdfformsTestPdf:    Testausgabe des PDF
@@ -36,6 +36,8 @@ class PdfformsTestPdf extends Backend
     {
         if( Input::get('key') !== 'testpdf' ) return '';        // Falscher Aufruf
 
+        $rootDir = System::getContainer()->getParameter('kernel.project_dir');
+
         // Formulareinstellungen laden
         $db = Database::getInstance();
         $objForm = $db->prepare("SELECT * FROM tl_form WHERE id=?")
@@ -48,15 +50,15 @@ class PdfformsTestPdf extends Backend
         $objFields = $db->prepare("SELECT name, type FROM tl_form_field WHERE invisible<>1 AND pid=?")
                         ->execute($objForm->id);
 
-        $arrFields = array();
-        $arrTypes  = array();
+        $arrFields = [];
+        $arrTypes  = [];
         while( $objFields->next() ) {
             if( !empty($objFields->name) ) {
                 $arrTypes[$objFields->name] = $objFields->type;
             }
         }
         foreach( $arrTypes as $key=>$type ) {
-            $widgetName = PdfformsHelper::normalisierung($key);         // normalisierter Feldname
+            $widgetName = PdfformsHelper::normalisierung( $key );       // normalisierter Feldname
 
             $arrFields[$widgetName]['type']  = $type;                   // Feldtyp (wichtig für die auswertenden InsertTags)
             $arrFields[$widgetName]['value'] = $key;                    // (gesendeter Wert) Im TestPDF: Feldname
@@ -70,12 +72,12 @@ class PdfformsTestPdf extends Backend
                          'handler'       => $objForm->pdff_handler,
                          'savepath'      => FilesModel::findByUuid($objForm->pdff_savepath)->path ?? '',
                          'protect'       => $objForm->pdff_protect,
-                         'openpassword'  => Controller::replaceInsertTags( PdfformsHelper::decrypt($objForm->pdff_openpassword) ),
+                         'openpassword'  => System::getContainer()->get('contao.insert_tag.parser')->replaceInline( PdfformsHelper::decrypt( $objForm->pdff_openpassword ) ),
                          'protectflags'  => StringUtil::deserialize($objForm->pdff_protectflags),
-                         'password'      => Controller::replaceInsertTags( PdfformsHelper::decrypt($objForm->pdff_password) ),
+                         'password'      => System::getContainer()->get('contao.insert_tag.parser')->replaceInline( PdfformsHelper::decrypt( $objForm->pdff_password ) ),
                          'multiform'     => StringUtil::deserialize($objForm->pdff_multiform),
                          'allpages'      => $objForm->pdff_allpages,
-                         'offset'        => array(0, 0),
+                         'offset'        => [0, 0],
                          'textcolor'     => $objForm->pdff_textcolor,
                          'title'         => $objForm->pdff_title,
                          'author'        => $objForm->pdff_author,
@@ -97,33 +99,18 @@ class PdfformsTestPdf extends Backend
         // HOOK: before pdf generation
         if( isset($GLOBALS['TL_HOOKS']['pdf_formsBeforePdf']) && \is_array($GLOBALS['TL_HOOKS']['pdf_formsBeforePdf']) ) {
             foreach( $GLOBALS['TL_HOOKS']['pdf_formsBeforePdf'] as $callback ) {
-                $arrPDF = System::importStatic($callback[0])->{$callback[1]}( $arrPDF, $this );
+                $arrPDF = System::importStatic($callback[0])->{$callback[1]}( $arrPDF );
             }
         }
 
 
-        //-- Include Settings
-        $tcpdfinit = Config::get("pdftemplateTcpdf");
-
-        // 1: Own settings addressed via app/config/config.yml
-        if( !empty($tcpdfinit) && file_exists(TL_ROOT . '/' . $tcpdfinit) ) {
-            require_once(TL_ROOT . '/' . $tcpdfinit);
+        // Own tcpdf.php from files directory
+        if( file_exists($rootDir . '/files/tcpdf.php') ) {
+            require_once($rootDir . '/files/tcpdf.php');
         }
-        // 2: Own tcpdf.php from files directory
-        else if( file_exists(TL_ROOT . '/files/tcpdf.php') ) {
-            require_once(TL_ROOT . '/files/tcpdf.php');
-        }
-        // 3: From config directory (up to Contao 4.6)
-        else if( file_exists(TL_ROOT . '/vendor/contao/core-bundle/src/Resources/contao/config/tcpdf.php') ) {
-            require_once(TL_ROOT . '/vendor/contao/core-bundle/src/Resources/contao/config/tcpdf.php');
-        }
-        // 4: From config directory of tcpdf-bundle (from Contao 4.7)
-        else if( file_exists(TL_ROOT . '/vendor/contao/tcpdf-bundle/src/Resources/contao/config/tcpdf.php') ) {
-            require_once(TL_ROOT . '/vendor/contao/tcpdf-bundle/src/Resources/contao/config/tcpdf.php');
-        }
-        // 5: not found? - Then take it from this extension
+        // ELSE: not found? - Then take it from this extension
         else {
-            require_once(TL_ROOT . '/vendor/do-while/contao-pdfforms-bundle/src/Resources/contao/config/tcpdf.php');
+            require_once($rootDir . '/vendor/do-while/contao-pdfforms-bundle/src/Resources/contao/config/tcpdf.php');
         }
 
 

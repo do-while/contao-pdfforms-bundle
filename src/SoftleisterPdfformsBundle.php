@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Extension for Contao 4
+ * Extension for Contao 5
  *
- * @copyright  Softleister 2014-2021
+ * @copyright  Softleister 2014-2024
  * @author     Softleister <info@softleister.de>
  * @package    contao-pdfforms-bundle
  * @licence    LGPL

@@ -1,16 +1,23 @@
 <?php
 
 /**
- * Extension for Contao 4
+ * Extension for Contao 5
  *
- * @copyright  Softleister 2014-2021
+ * @copyright  Softleister 2014-2024
  * @author     Softleister <info@softleister.de>
  * @package    contao-pdfforms-bundle
  * @licence    LGPL
  * @see	       https://github.com/do-while/contao-pdfforms-bundle
  */
 
-require_once( TL_ROOT . '/vendor/do-while/contao-pdfforms-bundle/src/Resources/contao/classes/PdfformsHelper.php' );
+
+use Contao\Backend;
+use Contao\DC_Table;
+use Contao\FilesModel;
+use Contao\StringUtil;
+use Contao\DataContainer;
+use Softleister\PdfformsBundle\PdfformsHelper;
+
 
 /**
  * Table tl_pdff_positions
@@ -20,7 +27,7 @@ $GLOBALS['TL_DCA']['tl_pdff_positions'] = array
     // Config
     'config' => array
     (
-        'dataContainer'               => 'Table',
+        'dataContainer'               => DC_Table::class,
         'enableVersioning'            => true,
         'ptable'                      => 'tl_form',
         'sql' => array
@@ -38,80 +45,61 @@ $GLOBALS['TL_DCA']['tl_pdff_positions'] = array
     (
         'sorting' => array
         (
-            'mode'                    => 4,
-            'fields'                  => array('sorting'),
-            'panelLayout'             => 'filter,search,limit',
-            'headerFields'            => array('title', 'tstamp', 'formID', 'storeValues', 'sendViaEmail', 'recipient', 'subject', 'tableless'),
-            'child_record_callback'   => array('tl_pdff_positions', 'listPositions')
+            'mode'                    => DataContainer::MODE_PARENT,
+            'fields'                  => ['sorting'],
+            'panelLayout'             => 'filter;sort,search,limit',
+            'defaultSearchField'      => 'label',
+            'headerFields'            => ['title', 'tstamp', 'storeValues', 'sendViaEmail', 'recipient', 'subject'],
+            'child_record_callback'   => ['tl_pdff_positions', 'listPositions']
         ),
         'global_operations' => array
         (
             'testpdf' => array
             (
-                'label'               => &$GLOBALS['TL_LANG']['tl_pdff_positions']['testpdf'],
                 'href'                => 'key=testpdf',
                 'class'               => 'header_testpdf',
                 'attributes'          => 'onclick="Backend.getScrollOffset()" accesskey="t"'
             ),
-            'all' => array
-            (
-                'label'               => &$GLOBALS['TL_LANG']['MSC']['all'],
-                'href'                => 'act=select',
-                'class'               => 'header_edit_all',
-                'attributes'          => 'onclick="Backend.getScrollOffset()" accesskey="e"'
-            )
+            'all'
         ),
-        'operations' => array
-        (
-            'edit' => array
-            (
-                'label'               => &$GLOBALS['TL_LANG']['tl_pdff_positions']['edit'],
-                'href'                => 'act=edit',
-                'icon'                => 'edit.gif'
-            ),
-            'copy' => array
-            (
-                'label'               => &$GLOBALS['TL_LANG']['tl_pdff_positions']['copy'],
-                'href'                => 'act=paste&amp;mode=copy',
-                'icon'                => 'copy.gif',
-                'attributes'          => 'onclick="Backend.getScrollOffset()"'
-            ),
-            'cut' => array
-            (
-                'label'               => &$GLOBALS['TL_LANG']['tl_pdff_positions']['cut'],
-                'href'                => 'act=paste&amp;mode=cut',
-                'icon'                => 'cut.gif',
-                'attributes'          => 'onclick="Backend.getScrollOffset()"'
-            ),
-            'delete' => array
-            (
-                'label'               => &$GLOBALS['TL_LANG']['tl_pdff_positions']['delete'],
-                'href'                => 'act=delete',
-                'icon'                => 'delete.gif',
-                'attributes'          => 'onclick="if(!confirm(\'' . ($GLOBALS['TL_LANG']['MSC']['deleteConfirm'] ?? null) . '\'))return false;Backend.getScrollOffset()"'
-            ),
-            'toggle' => array
-            (
-                'label'               => &$GLOBALS['TL_LANG']['tl_pdff_positions']['toggle'],
-                'icon'                => 'visible.gif',
-                'attributes'          => 'onclick="Backend.getScrollOffset();return AjaxRequest.toggleVisibility(this,%s)"',
-                'button_callback'     => array('tl_pdff_positions', 'toggleIcon')
-            ),
-            'show' => array
-            (
-                'label'               => &$GLOBALS['TL_LANG']['tl_pdff_positions']['show'],
-                'href'                => 'act=show',
-                'icon'                => 'show.gif'
-            )
-        )
     ),
 
     // Palettes
     'palettes' => array
     (
-        'default'                     => '{pdff_legend},textitems;'
-                                        .'{attr_legend},page,posxy,borderright,align,fontsize,fontstyle;'
-                                        .'{publish_legend},published',
+        '__selector__'  => ['type', 'pictype'],
+        'default'       => '{type_legend},type;'
+                          .'{publish_legend},published',
+
+        'text'          => '{type_legend},type;'
+                          .'{pdff_legend},textitems,textcolor,noblanks,notice;'
+                          .'{attr_legend},page,posxy,borderright,align,fontsize,fontstyle,texttransform;'
+                          .'{publish_legend},published',
+
+        'picfile'       => '{type_legend},type,notice;'
+                          .'{attr_legend},page,bedingung,invert,posxy,picsize;'
+                          .'{img_legend},pictype,picture,size;'
+                          .'{publish_legend},published',
+
+        'picupload'     => '{type_legend},type,notice;'
+                          .'{attr_legend},page,bedingung,invert,posxy,picsize;'
+                          .'{img_legend},pictype,pictag,size;'
+                          .'{publish_legend},published',
+
+        'picdata'       => '{type_legend},type,notice;'
+                          .'{attr_legend},page,bedingung,invert,posxy,picsize;'
+                          .'{img_legend},pictype,pictag,size;'
+                          .'{publish_legend},published',
+
+        'picuuid'       => '{type_legend},type,notice;'
+                          .'{attr_legend},page,bedingung,invert,posxy,picsize;'
+                          .'{img_legend},pictype,pictag,size;'
+                          .'{publish_legend},published',
+
+        'qrcode'        => '{type_legend},type,bartype;'
+                          .'{pdff_legend},textitems,textcolor,noblanks,notice;'
+                          .'{attr_legend},page,bedingung,invert,posxy,qrsize;'
+                          .'{publish_legend},published',
     ),
 
     // Fields
@@ -119,122 +107,238 @@ $GLOBALS['TL_DCA']['tl_pdff_positions'] = array
     (
         'id' => array
         (
-            'sql'                     => "int(10) unsigned NOT NULL auto_increment"
+            'sql'                     => ['type' => 'integer', 'notnull' => false, 'unsigned' => true, 'autoincrement' => true]
         ),
         'pid' => array
         (
             'foreignKey'              => 'tl_form.title',
-            'sql'                     => "int(10) unsigned NOT NULL default '0'",
-            'relation'                => array('type'=>'belongsTo', 'load'=>'lazy')
+            'sql'                     => ['type' => 'integer', 'notnull' => false, 'unsigned' => true, 'default' => '0'],
+            'relation'                => ['type' => 'belongsTo', 'load' => 'lazy']
         ),
         'sorting' => array
         (
-            'sql'                     => "int(10) unsigned NOT NULL default '0'"
+            'sql'                     => ['type' => 'integer', 'notnull' => false, 'unsigned' => true, 'default' => '0']
         ),
         'tstamp' => array
         (
-            'label'                   => &$GLOBALS['TL_LANG']['tl_pdff_positions']['tstamp'],
-            'sql'                     => "int(10) unsigned NOT NULL default '0'"
+            'sql'                     => ['type' => 'integer', 'notnull' => false, 'unsigned' => true, 'default' => '0']
         ),
+//-------
+        'type' => array
+        (
+            'exclude'                 => true,
+            'default'                 => 'text',
+            'inputType'               => 'select',
+            'options'                 => ['text', 'pic', 'qrcode'],
+            'reference'               => &$GLOBALS['TL_LANG']['tl_pdff_positions']['type_'],
+            'eval'                    => ['tl_class' => 'w50', 'submitOnChange' => true],
+            'sql'                     => ['type' => 'string', 'length' => 8, 'default' => 'text']
+        ),
+        'bartype' => array
+        (
+            'exclude'                 => true,
+            'default'                 => 'QRCODE,Q',
+            'filter'                  => true,
+            'inputType'               => 'select',
+            'options'                 => [ '2d' => ['QRCODE,L', 'QRCODE,M', 'QRCODE,Q', 'QRCODE,H', 'PDF417', 'DATAMATRIX'], 
+                                           '1d' => ['C39', 'C39+', 'C39E', 'C39E+', 'C93', 'S25', 'S25+', 'I25', 'I25+', 'C128', 'C128A', 'C128B', 'C128C', 'EAN8', 'EAN13', 'UPCA', 'UPCE', 'EAN5', 'EAN2', 'MSI', 'MSI+', 'CODABAR', 'CODE11', 'PHARMA', 'PHARMA2T', 'IMB', 'POSTNET', 'PLANET', 'RMS4CC', 'KIX']
+                                         ],
+            'reference'               => &$GLOBALS['TL_LANG']['tl_pdff_positions']['bartype_'],
+            'eval'                    => ['tl_class' => 'w50'],
+            'sql'                     => ['type' => 'string', 'length' => 12, 'default' => 'QRCODE,Q']
+        ),
+//-------
         'textitems' => array
         (
-            'label'                   => &$GLOBALS['TL_LANG']['tl_pdff_positions']['textitems'],
             'exclude'                 => true,
             'inputType'               => 'multiColumnWizard',
+            'search'                  => true,
             'eval'                    => array
             (
-                    'columnFields' => array
+                'columnFields' => array
+                (
+                    'feld' => array
                     (
-                            'feld' => array
-                            (
-                                    'label'             => &$GLOBALS['TL_LANG']['tl_pdff_positions']['textitem_feld'],
-                                    'default'           => '',
-                                    'exclude'           => true,
-                                    'inputType'         => 'text',
-                                    'eval'              => array('allowHtml' => true, 'style' => 'width:265px'),
-                            ),
-                            'bedingung' => array
-                            (
-                                    'label'             => &$GLOBALS['TL_LANG']['tl_pdff_positions']['textitem_bedingung'],
-                                    'exclude'           => true,
-                                    'inputType'         => 'select',
-                                    'eval'              => array('style' => 'width:235px', 'chosen' => true, 'includeBlankOption' => true),
-                                    'options_callback'  => array('tl_pdff_positions', 'getFelder'),
-                            ),
-                            'invert' => array
-                            (
-                                    'label'             => &$GLOBALS['TL_LANG']['tl_pdff_positions']['textitem_invert'],
-                                    'exclude'           => true,
-                                    'inputType'         => 'select',
-                                    'options'           => array('used', 'empty'),
-                                    'reference'         => &$GLOBALS['TL_LANG']['tl_pdff_positions']['textitem_inverts'],
-                                    'eval'              => array('style' => 'width:85px'),
-                            ),
-                    )
+                        'label'             => &$GLOBALS['TL_LANG']['tl_pdff_positions']['textitem_feld'],
+                        'default'           => '',
+                        'exclude'           => true,
+                        'inputType'         => 'text',
+                        'eval'              => ['allowHtml' => true, 'style' => 'width:350px'],
+                    ),
+                    'bedingung' => array
+                    (
+                        'label'             => &$GLOBALS['TL_LANG']['tl_pdff_positions']['textitem_bedingung'],
+                        'exclude'           => true,
+                        'inputType'         => 'select',
+                        'eval'              => ['style' => 'width:235px', 'chosen' => true, 'includeBlankOption' => true],
+                        'options_callback'  => ['tl_pdff_positions', 'getFelder'],
+                    ),
+                    'invert' => array
+                    (
+                        'label'             => &$GLOBALS['TL_LANG']['tl_pdff_positions']['textitem_invert'],
+                        'exclude'           => true,
+                        'inputType'         => 'select',
+                        'options'           => ['used', 'empty'],
+                        'reference'         => &$GLOBALS['TL_LANG']['tl_pdff_positions']['textitem_inverts'],
+                        'eval'              => ['style' => 'width:100px'],
+                    ),
+                )
             ),
             'sql'                     => "mediumtext NULL"
         ),
+        'notice' => array
+        (
+            'exclude'                 => true,
+            'exclude'                 => true,
+            'search'                  => true,
+            'inputType'               => 'textarea',
+            'eval'                    => ['tl_class' => 'clr long'],
+            'sql'                     => "text NULL"
+        ),
+        'noblanks' => array
+        (
+            'exclude'                 => true,
+            'inputType'               => 'checkbox',
+            'eval'                    => ['tl_class' => 'm12 w50'],
+            'sql'                     => ['type' => 'string', 'length' => 1, 'fixed' => true, 'default' => '']
+        ),
+//-------
         'page' => array
         (
-            'label'                   => &$GLOBALS['TL_LANG']['tl_pdff_positions']['page'],
-            'default'                 => '1',
             'exclude'                 => true,
+            'default'                 => '1',
             'filter'                  => true,
             'inputType'               => 'text',
-            'eval'                    => array('mandatory'=>true, 'rgxp'=>'digit', 'tl_class'=>'w50'),
-            'sql'                     => "int(10) unsigned NOT NULL default '1'"
+            'eval'                    => ['mandatory' => true, 'rgxp' => 'digit', 'tl_class' => 'w50'],
+            'sql'                     => ['type' => 'integer', 'notnull' => false, 'unsigned' => true, 'default' => '1']
         ),
         'posxy' => array
         (
-            'label'                   => &$GLOBALS['TL_LANG']['tl_pdff_positions']['posxy'],
-            'inputType'               => 'text',
-            'eval'                    => array('mandatory'=>true, 'maxlength'=>6, 'multiple'=>true, 'size'=>2, 'decodeEntities'=>true, 'tl_class'=>'clr w50'),
-            'sql'                     => "varchar(64) NOT NULL default ''"
-        ),
-        'borderright' => array
-        (
-            'label'                   => &$GLOBALS['TL_LANG']['tl_pdff_positions']['borderright'],
             'exclude'                 => true,
             'inputType'               => 'text',
-            'eval'                    => array('rgxp'=>'digit', 'maxlength'=>16, 'tl_class'=>'w50'),
-            'sql'                     => "varchar(16) NOT NULL default ''"
+            'eval'                    => ['mandatory' => true, 'maxlength' => 6, 'multiple' => true, 'size' => 2, 'decodeEntities' => true, 'tl_class' => 'clr w50'],
+            'sql'                     => ['type' => 'string', 'length' => 64, 'default' => '']
+        ),
+        'picsize' => array
+        (
+            'exclude'                 => true,
+            'inputType'               => 'text',
+            'eval'                    => ['mandatory' => true, 'maxlength' => 6, 'multiple' => true, 'size' => 2, 'decodeEntities' => true, 'tl_class' => 'w50'],
+            'sql'                     => ['type' => 'string', 'length' => 64, 'default' => '']
+        ),
+//-------
+        'borderright' => array
+        (
+            'exclude'                 => true,
+            'inputType'               => 'text',
+            'eval'                    => ['rgxp' => 'digit', 'maxlength' => 16, 'tl_class' => 'w50'],
+            'sql'                     => ['type' => 'string', 'length' => 16, 'default' => '']
         ),
         'align' => array
         (
-            'label'                   => &$GLOBALS['TL_LANG']['tl_pdff_positions']['align'],
+            'exclude'                 => true,
             'default'                 => 'left',
             'inputType'               => 'select',
-            'options'                 => array('left', 'center', 'right'),
+            'options'                 => ['left', 'center', 'right'],
             'reference'               => &$GLOBALS['TL_LANG']['MSC'],
-            'eval'                    => array('tl_class'=>'clr w50'),
-            'sql'                     => "varchar(32) NOT NULL default ''"
+            'eval'                    => ['tl_class' => 'clr w50'],
+            'sql'                     => ['type' => 'string', 'length' => 32, 'default' => '']
         ),
         'fontsize' => array
         (
-            'label'                   => &$GLOBALS['TL_LANG']['tl_pdff_positions']['fontsize'],
+            'exclude'                 => true,
             'default'                 => '11',
             'exclude'                 => true,
             'inputType'               => 'text',
-            'eval'                    => array('rgxp'=>'digit', 'maxlength'=>16, 'tl_class'=>'w50'),
-            'sql'                     => "varchar(16) NOT NULL default '11'"
+            'eval'                    => ['rgxp' => 'digit', 'maxlength' => 16, 'tl_class' => 'w50'],
+            'sql'                     => ['type' => 'string', 'length' => 16, 'default' => '11']
+        ),
+        'textcolor' => array
+        (
+            'exclude'                 => true,
+            'default'                 => '',
+            'inputType'               => 'text',
+            'eval'                    => ['maxlength' => 6, 'colorpicker' => true, 'isHexColor' => true, 'decodeEntities' => true, 'tl_class' => 'w50 wizard', 'style' => 'width:138px'],
+            'sql'                     => ['type' => 'string', 'length' => 8, 'default' => '']
         ),
         'fontstyle' => array
         (
-            'label'                   => &$GLOBALS['TL_LANG']['tl_pdff_positions']['fontstyle'],
+            'exclude'                 => true,
             'inputType'               => 'checkbox',
-            'options'                 => array('bold', 'italic'),
-            'reference'               => &$GLOBALS['TL_LANG']['tl_pdff_positions']['fontstyles'],
-            'eval'                    => array('multiple'=>true, 'tl_class'=>'clr w50'),
-            'sql'                     => "varchar(255) NOT NULL default ''"
+            'options'                 => ['bold', 'italic'],
+            'reference'               => &$GLOBALS['TL_LANG']['tl_pdff_positions']['fontstyle_'],
+            'eval'                    => ['multiple' => true, 'tl_class' => 'clr w50'],
+            'sql'                     => ['type' => 'string', 'length' => 255, 'default' => '']
         ),
+        'texttransform' => array
+        (
+            'exclude'                 => true,
+            'inputType'               => 'select',
+            'options'                 => ['uppercase', 'lowercase', 'capitalize', 'none'],
+            'reference'               => &$GLOBALS['TL_LANG']['tl_pdff_positions']['texttransform_'],
+            'eval'                    => ['includeBlankOption' => true, 'tl_class' => 'w50'],
+            'sql'                     => ['type' => 'string', 'length' => 32, 'default' => '']
+        ),
+//-------
+        'pictype' => array
+        (
+            'exclude'                 => true,
+            'default'                 => 'file',
+            'filter'                  => true,
+            'inputType'               => 'select',
+            'options'                 => ['file', 'upload', 'data', 'uuid'],
+            'reference'               => &$GLOBALS['TL_LANG']['tl_pdff_positions']['pictype_'],
+            'eval'                    => ['tl_class' => 'w50', 'submitOnChange' => true],
+            'sql'                     => ['type' => 'string', 'length' => 8, 'default' => 'file']
+        ),
+        'picture' => array
+        (
+            'exclude'                 => true,
+            'inputType'               => 'fileTree',
+            'eval'                    => ['mandatory' => true, 'filesOnly' => true, 'fieldType' => 'radio', 'tl_class' => 'clr', 'extensions' => '%contao.image.valid_extensions%'],
+            'sql'                     => ['type' => 'binary', 'length' => 16, 'fixed' => true, 'notnull' => false],
+        ),
+        'pictag' => array
+        (
+            'exclude'                 => true,
+            'inputType'               => 'text',
+            'eval'                    => ['mandatory' => true, 'maxlength' => 64, 'tl_class' => 'clr w50'],
+            'sql'                     => ['type' => 'string', 'length' => 64, 'default' => 'file']
+        ),
+        'qrsize' => array
+        (
+            'exclude'                 => true,
+            'default'                 => '2',
+            'inputType'               => 'select',
+            'options'                 => ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
+            'eval'                    => ['tl_class' => 'w50'],
+            'sql'                     => ['type' => 'string', 'length' => 2, 'default' => '2']
+        ),
+//-------
+        'bedingung' => array
+        (
+            'exclude'                 => true,
+            'inputType'               => 'select',
+            'eval'                    => ['chosen' => true, 'includeBlankOption' => true, 'tl_class' => 'w25'],
+            'options_callback'        => ['tl_pdff_positions', 'optgetFelder'],
+            'sql'                     => ['type' => 'string', 'length' => 80, 'default' => '']
+        ),
+        'invert' => array
+        (
+            'exclude'                 => true,
+            'inputType'               => 'checkbox',
+            'eval'                    => ['tl_class' => 'm12 w25'],
+            'sql'                     => ['type' => 'string', 'length' => 1, 'fixed' => true, 'default' => '']
+        ),
+//-------
         'published' => array
         (
-            'label'                   => &$GLOBALS['TL_LANG']['tl_pdff_positions']['published'],
             'exclude'                 => true,
             'filter'                  => true,
+            'toggle'                  => true,
             'inputType'               => 'checkbox',
-            'eval'                    => array('doNotCopy'=>true),
-            'sql'                     => "char(1) NOT NULL default ''"
+            'eval'                    => ['doNotCopy' => true],
+            'sql'                     => ['type' => 'string', 'length' => 1, 'fixed' => true, 'default' => '']
         )
     )
 );
@@ -243,105 +347,86 @@ $GLOBALS['TL_DCA']['tl_pdff_positions'] = array
 /**
  * Class tl_pdff_positions
  */
-class tl_pdff_positions extends \Contao\Backend
+class tl_pdff_positions extends Backend
 {
-    /**
-     * Import the back end user object
-     */
-    public function __construct()
-    {
-        parent::__construct();
-        $this->import('BackendUser', 'User');
-    }
-
     //-----------------------------------------------------------------
     //  Callback zum Anzeigen der Positionen im Backend
     //
     //  $arrRow - aktueller Datensatz
     //-----------------------------------------------------------------
-    public function listPositions($arrRow)
+    public function listPositions( $arrRow )
     {
-        $pub = $arrRow['published'] ? 'color:#555' : 'color:#bbb';
-        $pos = \Contao\StringUtil::deserialize($arrRow['posxy']);
-        $items = \Contao\StringUtil::deserialize($arrRow['textitems']);
+        $pub     = $arrRow['published'] ? 'pdfcolor' : 'pdfcolor unpublished';
+        $pos     = StringUtil::deserialize( $arrRow['posxy'], true );
+        $picsize = StringUtil::deserialize( $arrRow['picsize'], true );
+        $items   = StringUtil::deserialize( $arrRow['textitems'], true );
 
-        $style = \Contao\StringUtil::deserialize($arrRow['fontstyle']);
-        $text = (is_array($style) && in_array('bold', $style) ? '<strong>' : '') . (is_array($style) && in_array('italic', $style) ? '<em>' : '');
-        foreach($items as $item) $text .= $item['feld'] . '<br>';
-        $text .= (is_array($style) && in_array('italic', $style) ? '</em>' : '') . (is_array($style) && in_array('bold', $style) ? '</strong>' : '');
+        switch( $arrRow['type'] ) {
+            case 'pic':     if( $arrRow['pictype'] === 'file') {
+                                $text = FilesModel::findByUuid( $arrRow['picture'] )->path ?? '';
+                                $text = '<span title="' . $text . '">' . basename( $text ) . '</span>';
+                            }
+                            else {
+                                $text = $arrRow['pictag'];
+                            }
+                            break;
 
-        $result = '<table><tr>'
-                 .'<td style="'.$pub.'" width="240" valign="top">' . $text . '</td>'
-                 .'<td style="'.$pub.'" width="80" valign="top">Seite ' . $arrRow['page'] . '</td>'
-                 .'<td style="'.$pub.'" width="80" valign="top">X = ' . $pos[0] . '</td>'
-                 .'<td style="'.$pub.'" width="80" valign="top">Y = ' . $pos[1] . '</td>'
-                 .'</tr></table>';
+            case 'qrcode':
+            case 'text':
+            default:        $style = StringUtil::deserialize( $arrRow['fontstyle'], true );
+                            $text = ( in_array( 'bold', $style ) ? '<strong>' : '' ) . ( in_array( 'italic', $style ) ? '<em>' : '' );
+                            foreach( $items as $item ) {
+                                $text .= $item['feld'] . '<br>';
+                            }
+                            $text .= ( in_array( 'italic', $style ) ? '</em>' : '' ) . ( in_array( 'bold', $style ) ? '</strong>' : '' );
+                            break;
+        }
+
+        $result = '<table class="pdfposition"><tr class="' . $pub . '">'
+                 .'<td width="32"><img src="bundles/softleisterpdfforms/pos_' . $arrRow['type'] . '.svg" width="16" height="16" alt=""></td>'
+                 .'<td width="240" valign="top">' . $text . '</td>'
+                 .'<td width="65" valign="top">' . $GLOBALS['TL_LANG']['tl_pdff_positions']['seite'] . ' ' . ( $arrRow['page'] ?? '' ) . '</td>'
+                 .'<td width="65" valign="top">X = ' . ( $pos[0] ?? '' ) . '</td>'
+                 .'<td width="65" valign="top">Y = ' . ( $pos[1] ?? '' ) . '</td>';
+
+        if( ($arrRow['type'] === 'pic') && !empty( $arrRow['picsize'] ) ) {
+            $result .= '<td width="120" valign="top">(' . $picsize[0] . ' x ' . $picsize[1] . ' mm)</td>';
+        }
+        else {
+            $result .= '<td width="120" valign="top">&nbsp;</td>';
+        }
+
+        $result .= '<td valign="top">' . ( $arrRow['notice'] ?? '' ) . '</td>'
+                  .'</tr></table>';
+
         return $result;
     }
 
-    //-----------------------------------------------------------------
-    //    Veröffentlichung umschalten
-    //-----------------------------------------------------------------
-    public function toggleIcon( $row, $href, $label, $title, $icon, $attributes )
-    {
-        if( strlen(\Contao\Input::get('tid')) ) {
-            $this->toggleVisibility( \Contao\Input::get('tid'), (\Contao\Input::get('state') == 1) );
-            $this->redirect( $this->getReferer() );
-        }
-
-        $href .= '&amp;tid='.$row['id'].'&amp;state='.($row['published'] ? '' : 1);
-
-        if( !$row['published'] ) {
-            $icon = 'invisible.gif';
-        }
-
-        return '<a href="' . $this->addToUrl($href) . '" title="' . \Contao\StringUtil::specialchars($title) . '"' . $attributes . '>' . \Contao\Image::getHtml($icon, $label) . '</a> ';
-    }
-
 
     //-----------------------------------------------------------------
-    //    Veröffentlichung umschalten
-    //-----------------------------------------------------------------
-    public function toggleVisibility( $intId, $blnVisible )
-    {
-        $objVersions = new \Contao\Versions( 'tl_pdff_positions', $intId );
-        $objVersions->initialize( );
-
-        // Trigger the save_callback
-        if( is_array($GLOBALS['TL_DCA']['tl_pdff_positions']['fields']['published']['save_callback']) ) {
-            foreach( $GLOBALS['TL_DCA']['tl_pdff_positions']['fields']['published']['save_callback'] as $callback ) {
-                if( is_array( $callback ) ) {
-                    $this->import( $callback[0] );
-                    $blnVisible = $this->$callback[0]->$callback[1]( $blnVisible, $this );
-                }
-                else if( is_callable( $callback ) ) {
-                    $blnVisible = $callback( $blnVisible, $this );
-                }
-            }
-        }
-
-        // Update the database
-        $this->Database->prepare("UPDATE tl_pdff_positions SET tstamp=". time() .", published='" . $blnVisible . "' WHERE id=?")->execute( $intId );
-
-        $objVersions->create();
-        $this->log( 'A new version of record "tl_pdff_positions.id='.$intId.'" has been created'.$this->getParentEntries('tl_pdff_positions', $intId ), __METHOD__, TL_GENERAL);
-    }
-
-
-    //-----------------------------------------------------------------
-    //  Erstellt eine Liste der Formularfelder
+    //  Erstellt eine Liste der Formularfelder für Multicolumn-Wizard
     //  $dc->currentRecord   ist die ID des tl_pdff_positions
     //-----------------------------------------------------------------
     public function getFelder( $dc )
     {
-        $objForm = $this->Database->prepare("SELECT pid FROM tl_pdff_positions WHERE id=?")
-                                  ->execute($dc->currentRecord);
+        $objForm = $this->Database->prepare( "SELECT pid FROM tl_pdff_positions WHERE id=?" )
+                                  ->execute( $dc->currentRecord );
                                   
-        if( $objForm->numRows < 1 ) return array();
+        if( $objForm->numRows < 1 ) return [];
         
-        return Softleister\Pdfforms\PdfformsHelper::getFormFields( $objForm->pid );
+        return PdfformsHelper::getFormFields( $objForm->pid );
     }
 
 
     //-----------------------------------------------------------------
+    //  Erstellt eine Liste der Formularfelder für Standardfeld
+    //  $dc->currentRecord   ist die ID des tl_pdff_positions
+    //-----------------------------------------------------------------
+    public function optgetFelder( DataContainer $dc )
+    {
+        return PdfformsHelper::getFormFields( $dc->activeRecord->pid );
+    }
+
+
+   //-----------------------------------------------------------------
 }

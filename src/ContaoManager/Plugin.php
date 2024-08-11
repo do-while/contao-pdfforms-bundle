@@ -1,9 +1,11 @@
 <?php
 
+declare( strict_types=1 );
+
 /**
- * Extension for Contao 4
+ * Extension for Contao 5
  *
- * @copyright  Softleister 2014-2021
+ * @copyright  Softleister 2014-2024
  * @author     Softleister <info@softleister.de>
  * @package    contao-pdfforms-bundle
  * @licence    LGPL
@@ -12,9 +14,11 @@
 
 namespace Softleister\PdfformsBundle\ContaoManager;
 
+use Contao\CoreBundle\ContaoCoreBundle;
 use Contao\ManagerPlugin\Bundle\Config\BundleConfig;
 use Contao\ManagerPlugin\Bundle\BundlePluginInterface;
 use Contao\ManagerPlugin\Bundle\Parser\ParserInterface;
+use Softleister\PdfformsBundle\SoftleisterPdfformsBundle;
 
 
 /**
@@ -24,15 +28,11 @@ use Contao\ManagerPlugin\Bundle\Parser\ParserInterface;
  */
 class Plugin implements BundlePluginInterface
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function getBundles( ParserInterface $parser )
+    public function getBundles( ParserInterface $parser ): array
     {
         return [
-            BundleConfig::create( 'Softleister\PdfformsBundle\SoftleisterPdfformsBundle' )
-                ->setLoadAfter( ['Contao\CoreBundle\ContaoCoreBundle'] )
-                ->setReplace( ['pdf_forms'] ),
+            BundleConfig::create( SoftleisterPdfformsBundle::class )
+                ->setLoadAfter( [ContaoCoreBundle::class] ),
         ];
     }
 }

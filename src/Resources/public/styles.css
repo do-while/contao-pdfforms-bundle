@@ -1,7 +1,26 @@
 .header_testpdf {
     padding:2px 0 3px 22px;
-    background-image:url("pdf_positions.png");
+    background-image:url("pdf_positions.svg");
     background-position:left center;
     background-repeat:no-repeat;
     margin-left:15px;
+}
+.multicolumnwizard {
+    width: max-content;
+}
+.pdfposition .pdfcolor {
+    color: #333;
+    vertical-align: baseline;
+}
+.pdfposition .pdfcolor.unpublished {
+    color: #aaa;
+}
+html[data-color-scheme=dark] .pdfposition .pdfcolor {
+    color: #d3d3d3;
+}
+html[data-color-scheme=dark] .pdfposition .pdfcolor.unpublished {
+    color: #555;
+}
+html[data-color-scheme=dark] .pdfposition .pdfcolor img {
+    filter: invert(75%);
 }

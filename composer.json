@@ -3,6 +3,7 @@
     "description": "Fill in a PDF template with inputs from web form and mail it",
     "keywords": ["contao", "widget", "pdf", "forms"],
     "type": "contao-bundle",
+    "version": "2.0.2",
     "homepage": "https://www.softleister.de",
     "license": "LGPL-3.0-or-later",
     "authors": [{
@@ -16,10 +17,11 @@
         "source": "https://github.com/do-while/contao-pdfforms-bundle"
     },
     "require": {
-        "php": ">=5.6.0",
-        "contao/core-bundle": "~4.4",
-        "menatwork/contao-multicolumnwizard": "^3.3",
-        "setasign/fpdi-tcpdf": "^2.0"
+        "php": "^8.2",
+        "contao/core-bundle": "^5.3",
+        "menatwork/contao-multicolumnwizard-bundle": "^3.6",
+        "tecnickcom/tcpdf": "^6.6",
+        "setasign/fpdi": "^2.5"
     },
     "autoload": {
         "psr-4": {
@@ -29,13 +31,14 @@
             "src/Resources/contao/"
         ],
         "exclude-from-classmap": [
-            "src/Resources/contao/config/",
-            "src/Resources/contao/dca/",
-            "src/Resources/contao/docs/",
-            "src/Resources/contao/languages/"
+            "contao/config/",
+            "contao/dca/",
+            "contao/docs/",
+            "contao/languages/",
+            "contao/templates/"
         ]
     },
     "extra": {
-		"contao-manager-plugin": "Softleister\\PdfformsBundle\\ContaoManager\\Plugin"
+        "contao-manager-plugin": "Softleister\\PdfformsBundle\\ContaoManager\\Plugin"
     }
 }

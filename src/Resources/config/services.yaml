@@ -1,0 +1,18 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    contao_pdfformsbundle.listener.insert_tags:
+        class: Softleister\PdfformsBundle\EventListener\ReplaceInsertTagsListener
+        arguments:
+            - '@contao.framework'
+        tags:
+            - { name: contao.hook, hook: replaceInsertTags }
+
+    contao_pdfformsbundle.listener.prepare_form_data:
+        class: Softleister\PdfformsBundle\EventListener\PrepareFormDataListener
+        arguments:
+            - '@contao.framework'
+        tags:
+            - { name: contao.hook, hook: prepareFormData }
