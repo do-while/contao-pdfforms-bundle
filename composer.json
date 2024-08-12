@@ -3,7 +3,6 @@
     "description": "Fill in a PDF template with inputs from web form and mail it",
     "keywords": ["contao", "widget", "pdf", "forms"],
     "type": "contao-bundle",
-    "version": "2.0.2",
     "homepage": "https://www.softleister.de",
     "license": "LGPL-3.0-or-later",
     "authors": [{
