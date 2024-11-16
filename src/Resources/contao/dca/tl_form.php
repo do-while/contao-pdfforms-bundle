@@ -179,6 +179,7 @@ $GLOBALS['TL_DCA']['tl_form']['fields']['pdff_multiform'] = array (
     'inputType'               => 'multiColumnWizard',
     'eval'                    => array
     (
+            'tl_class'     => 'clr',
             'columnFields' => array
             (
                     'bedingung' => array
