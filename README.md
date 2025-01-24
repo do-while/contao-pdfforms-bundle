@@ -36,11 +36,12 @@ composer require do-while/contao-pdfforms-bundle
 
 
 ## Version
-* 2.0.0<br>Freigabedatum: 20124-08-10<br>Version für Contao ab Version 5.3 LTS
+* 2.1.0<br>Freigabedatum: 2025-01-24<br>Kompatiblilität mit terminal42/contao-mp_forms
+* 2.0.0<br>Freigabedatum: 2024-08-10<br>Version für Contao ab Version 5.3 LTS
 * 1.x.x<br>Versionen für ältere Contao-Versionen
 
 
 **Problem melden | *Report Problem*:**<br>per E-Mail | *via Email*: licence@softleister.de
 
 ___
-Softleister - 2024-08-10
+Softleister - 2025-01-24
