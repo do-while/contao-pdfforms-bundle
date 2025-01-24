@@ -45,37 +45,59 @@ class PrepareFormDataListener
         if( $form->pdff_on != '1' ) return;                                 // PDF-Forms abgeschaltet!
 
         $rootDir = System::getContainer()->getParameter('kernel.project_dir');
+        $tags = System::getContainer()->get('contao.insert_tag.parser');
+
         // Aufbau eines Feldes mit den Feldtypen
         $db = Database::getInstance( );
         $objFields = $db->prepare( "SELECT name, type FROM tl_form_field WHERE invisible<>1 AND pid=?" )
                         ->execute( $form->id );
 
         $arrFields = $arrTypes  = [];
-        while( $objFields->next() ) {
-            if( !empty( $objFields->name ) ) {
-                $arrTypes[$objFields->name] = $objFields->type;
-            }
-        }
-        foreach( $arrTypes as $key=>$type ) {
-            $widgetName = PdfformsHelper::normalisierung( $key );           // normalisierter Feldname
+        $flag_mpforms = false;                                                          // erstmal kein mp_forms erkannt
+        while( $objFields->next() ) {                                                   // WHILE ( Einträge )
+            if( $objFields->type === 'mp_form_pageswitch' ) $flag_mpforms = true;       //   IF( Pageswitch ) mp_forms erkannt!
+            if( !empty( $objFields->name ) ) {                                          //   IF( Feldname )
+                $arrTypes[$objFields->name] = $objFields->type;                         //     Feld in die Liste aufnahmen
+            }                                                                           //   ENDIF
+        }                                                                               // END WHILE
 
-            $arrFields[$widgetName]['type']  = $type;                       // Feldtyp (wichtig für die auswertenden InsertTags)
-            $arrFields[$widgetName]['value'] = $submittedData[$key] ?? '';  // gesendeter Wert
-            $arrFields[$widgetName]['orig']  = $key;                        // Original Feldname
-        }
-        foreach( $files as $key=>$upload ) {
-            $widgetName = PdfformsHelper::normalisierung( $key );           // normalisierter Feldname
-
-            if( !$upload['error'] ) {
-                $arrFields[$widgetName]['value']    = $upload['tmp_name'];  // Datei im TMP-Verzeichnis
-                $arrFields[$widgetName]['basename'] = $upload['name'];      // Basename der Datei
-                $arrFields[$widgetName]['size']     = $upload['size'];      // Dateigröße
-                $arrFields[$widgetName]['temp']     = 'system/tmp/' . basename( $upload['tmp_name'] ) . '.' . pathinfo( $upload['name'] )['extension'];  // TMP-Verzeichnis von Contao
-            }
+        // Bei mp_forms-Verwendung muss ab Step 2 die Session erst geladen werden
+        if( $flag_mpforms && ( $tags->replaceInline( '{{mp_forms::' . $form->id . '::step::current}}' ) > 1 ) ) {
+            $arrFields = $_SESSION['pdf_forms']['form_' . $form->id]['arrFields'] ?? [];     // Vorhandene Daten laden
         }
 
-        $filename = StringUtil::standardize( StringUtil::restoreBasicEntities( $form->title ) )
-                  . System::getContainer()->get('contao.insert_tag.parser')->replaceInline( $form->pdff_fileext );
+        foreach( $arrTypes as $key=>$type ) {                                           // Alle Felder verarbeiten
+            if( isset( $submittedData[$key] ) ) {                                       // IF( Feld in den Daten vorhanden )
+                $widgetName = PdfformsHelper::normalisierung( $key );                   //   normalisierter Feldname
+
+                $arrFields[$widgetName]['type']  = $type;                               //   Feldtyp (wichtig für die auswertenden InsertTags)
+                $arrFields[$widgetName]['value'] = $submittedData[$key];                //   gesendeter Wert
+                $arrFields[$widgetName]['orig']  = $key;                                //   Original Feldname
+            }                                                                           // ENDIF
+        }           
+        foreach( $files as $key=>$upload ) {                                            // Alle Uploads verarbeiten           
+            if( isset( $submittedData[$key] ) ) {                                       // IF( Feld in den Daten vorhanden )
+                $widgetName = PdfformsHelper::normalisierung( $key );                   //   normalisierter Feldname
+
+                if( !$upload['error'] ) {           
+                    $arrFields[$widgetName]['value']    = $upload['tmp_name'];          //   Datei im TMP-Verzeichnis
+                    $arrFields[$widgetName]['basename'] = $upload['name'];              //   Basename der Datei
+                    $arrFields[$widgetName]['size']     = $upload['size'];              //   Dateigröße
+                    $arrFields[$widgetName]['temp']     = 'system/tmp/' . basename( $upload['tmp_name'] ) . '.' . pathinfo( $upload['name'] )['extension'];  // TMP-Verzeichnis von Contao
+                }
+            }                                                                           // ENDIF
+        }
+        $_SESSION['pdf_forms']['form_' . $form->id]['arrFields'] = $arrFields;          // Aktualisierte Formulardaten wieder in die Session
+
+        // bei mp_forms muss ggf. weiter gesammelt werden
+        if( $flag_mpforms && ( $tags->replaceInline( '{{mp_forms::' . $form->id . '::step::percentage}}' ) < 99.9 ) ) {
+            return;                                                                     // Hier abbrechen bei mp_forms, wenn nicht finales Formular
+        }
+
+
+        // Beginn der Verarbeitung der Formulardaten
+        $_SESSION['pdf_forms']['formid'] = $form->id;
+        $filename = StringUtil::standardize( StringUtil::restoreBasicEntities( $form->title ) ) . $tags->replaceInline( $form->pdff_fileext );
         $savepath = FilesModel::findByUuid( $form->pdff_savepath )->path ?? '';
 
         // Speichern im Home-Verzeichnis des eingeloggten Benutzers
@@ -106,9 +128,9 @@ class PrepareFormDataListener
                          'handler'       => $form->pdff_handler,
                          'savepath'      => $savepath,
                          'protect'       => $form->pdff_protect,
-                         'openpassword'  => System::getContainer()->get('contao.insert_tag.parser')->replaceInline( PdfformsHelper::decrypt( $form->pdff_openpassword ) ),
+                         'openpassword'  => $tags->replaceInline( PdfformsHelper::decrypt( $form->pdff_openpassword ) ),
                          'protectflags'  => StringUtil::deserialize( $form->pdff_protectflags, true ),
-                         'password'      => System::getContainer()->get('contao.insert_tag.parser')->replaceInline( PdfformsHelper::decrypt( $form->pdff_password ) ),
+                         'password'      => $tags->replaceInline( PdfformsHelper::decrypt( $form->pdff_password ) ),
                          'multiform'     => StringUtil::deserialize( $form->pdff_multiform, true ),
                          'allpages'      => $form->pdff_allpages,
                          'offset'        => [0, 0],
@@ -122,6 +144,7 @@ class PrepareFormDataListener
                          'arrFields'     => $arrFields,
                        );
         unset( $arrFields );
+        $_SESSION['pdf_forms']['form_' . $form->id] = [];          // Gesammelte Sessiondaten zum Formular löschen
 
         // Offsets eintragen, wenn angegeben
         $ofs = StringUtil::deserialize( $form->pdff_offset );

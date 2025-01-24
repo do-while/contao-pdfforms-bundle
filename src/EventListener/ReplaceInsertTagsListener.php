@@ -14,6 +14,8 @@ declare( strict_types=1 );
 
 namespace Softleister\PdfformsBundle\EventListener;
 
+use Contao\StringUtil;
+use Softleister\PdfformsBundle\PdfformsHelper;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 
 //-----------------------------------------------------------------
@@ -22,6 +24,7 @@ use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 //  {{pdf_forms::pdfdocument}}
 //  {{pdf_forms::pdfdocument::name}}
 //  {{pdf_forms::password_random}}
+//  {{pdf_forms::form_*}}
 //-----------------------------------------------------------------
 #[AsHook('replaceInsertTags')]
 class ReplaceInsertTagsListener
@@ -42,6 +45,16 @@ class ReplaceInsertTagsListener
         }
         else if( strtolower( $tag[1] ) === 'password_random' ) {
             return self::getRandomPassword( );
+        }
+        else if( substr( strtolower( $tag[1] ), 0, 5 ) === 'form_' ) {
+            $widgetName = PdfformsHelper::normalisierung( substr( $tag[1], 5 ) );       //   normalisierter Feldname
+            $value = $_SESSION['pdf_forms']['form_' . $_SESSION['pdf_forms']['formid'] ?? '']['arrFields'][$widgetName]['value'] ?? '';
+
+            $value = StringUtil::standardize( StringUtil::restoreBasicEntities( $value ) );   // Inhalt Dateinamen-tauglich machen
+            if( substr( $value, 0, 3 ) === 'id-' ) {                                    // Bei rein numerischen Werten wird id- voangestellt
+                $value = substr( $value, 3 );                                           // das wird hier wieder entfernt
+            }
+            return $value;
         }
 
         return false;                                                                   // kein bekannter InsertTag => nicht zuständig!
