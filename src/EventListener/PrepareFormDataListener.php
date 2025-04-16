@@ -21,7 +21,6 @@ use Contao\Database;
 use Contao\FilesModel;
 use Contao\StringUtil;
 use Contao\FrontendUser;
-use Symfony\Component\VarDumper\VarDumper;
 use Softleister\PdfformsBundle\PdfformsHelper;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 
@@ -97,7 +96,24 @@ class PrepareFormDataListener
 
         // Beginn der Verarbeitung der Formulardaten
         $_SESSION['pdf_forms']['formid'] = $form->id;
-        $filename = StringUtil::standardize( StringUtil::restoreBasicEntities( $form->title ) ) . $tags->replaceInline( $form->pdff_fileext );
+
+        // Dateinamen festlegen
+        // Der InsertTag {{form_session_data::*}} steht noch nicht zur Verfügung, 
+        // daher muss das zuvor manuell ersetzt werden
+        $fileext = $form->pdff_fileext;
+        if( preg_match_all( '/\{\{form_session_data::([^}]+)\}\}/', $fileext, $matches ) ) {    // suchen nach 'form_session_data' => $matches[1]
+            foreach( $matches[1] as $fieldName ) {
+                if( isset( $arrFields[$fieldName] ) ) {
+                    $replacement = $arrFields[$fieldName];
+                
+                    // Ersetzen Sie den gefundenen InsertTag im String
+                    $fileext = str_replace( '{{form_session_data::' . $fieldName . '}}', $arrFields[$fieldName]['value'], $fileext );
+                }
+            }
+        }
+        $fileext = $tags->replaceInline( $fileext );
+
+        $filename = StringUtil::standardize( StringUtil::restoreBasicEntities( $form->title ) ) . $fileext;
         $savepath = FilesModel::findByUuid( $form->pdff_savepath )->path ?? '';
 
         // Speichern im Home-Verzeichnis des eingeloggten Benutzers
