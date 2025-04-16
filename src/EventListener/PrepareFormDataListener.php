@@ -5,7 +5,7 @@ declare( strict_types=1 );
 /**
  * Extension for Contao 5
  *
- * @copyright  Softleister 2014-2024
+ * @copyright  Softleister 2014-2025
  * @author     Softleister <info@softleister.de>
  * @package    contao-pdfforms-bundle
  * @licence    LGPL
@@ -93,7 +93,6 @@ class PrepareFormDataListener
             return;                                                                     // Hier abbrechen bei mp_forms, wenn nicht finales Formular
         }
 
-
         // Beginn der Verarbeitung der Formulardaten
         $_SESSION['pdf_forms']['formid'] = $form->id;
 
@@ -103,11 +102,8 @@ class PrepareFormDataListener
         $fileext = $form->pdff_fileext;
         if( preg_match_all( '/\{\{form_session_data::([^}]+)\}\}/', $fileext, $matches ) ) {    // suchen nach 'form_session_data' => $matches[1]
             foreach( $matches[1] as $fieldName ) {
-                if( isset( $arrFields[$fieldName] ) ) {
-                    $replacement = $arrFields[$fieldName];
-                
-                    // Ersetzen Sie den gefundenen InsertTag im String
-                    $fileext = str_replace( '{{form_session_data::' . $fieldName . '}}', $arrFields[$fieldName]['value'], $fileext );
+                if( isset( $submittedData[$fieldName] ) ) {
+                    $fileext = str_replace( '{{form_session_data::' . $fieldName . '}}', $submittedData[$fieldName], $fileext );
                 }
             }
         }
