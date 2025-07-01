@@ -3,7 +3,7 @@
 /**
  * Extension for Contao 5
  *
- * @copyright  Softleister 2014-2024
+ * @copyright  Softleister 2014-2025
  * @author     Softleister <info@softleister.de>
  * @package    contao-pdfforms-bundle
  * @licence    LGPL
@@ -33,7 +33,7 @@ $GLOBALS['TL_LANG']['tl_pdff_positions']['published']          = ['Veröffentlic
 $GLOBALS['TL_LANG']['tl_pdff_positions']['picsize']            = ['Abmessungen', 'Größe des Rahmens Breite x Höhe in mm. Wird ein Wert mit 0 angegeben, wird er proportional errechnet.'];
 $GLOBALS['TL_LANG']['tl_pdff_positions']['picture']            = ['Bild', 'Wählen Sie das Bild aus'];
 $GLOBALS['TL_LANG']['tl_pdff_positions']['pictype']            = ['Bildquelle', 'Bild aus Datei oder aus einem Data-Stream verwenden.'];
-$GLOBALS['TL_LANG']['tl_pdff_positions']['pictag']             = ['Bilddaten', 'Definieren Sie den SimpleToken, der die Bilddaten enthält oder eine UUID.'];
+$GLOBALS['TL_LANG']['tl_pdff_positions']['pictag']             = ['Bilddaten', 'Definieren Sie das Formularfeld, das die Bilddaten enthält oder eine UUID.'];
 $GLOBALS['TL_LANG']['tl_pdff_positions']['qrsize']             = ['Größe des Barcodes', 'Wählen Sie die Größe aus.'];
 $GLOBALS['TL_LANG']['tl_pdff_positions']['noblanks']           = ['Keine automatischen Leerzeichen', 'Unterdrückt das automatische Einfügen von Leerzeichen zwischen den Feldern.'];
 $GLOBALS['TL_LANG']['tl_pdff_positions']['bedingung']          = ['Bedingung', 'Die Position wird nur ausgegeben, wenn die Bedingung erfüllt ist oder die Bedingung leer ist.'];

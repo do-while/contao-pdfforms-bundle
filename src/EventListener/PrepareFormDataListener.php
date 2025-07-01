@@ -38,13 +38,17 @@ class PrepareFormDataListener
 {
     public function __invoke( array &$submittedData, array $labels, array $fields, Form $form, array &$files ): void
     {
-        if( isset( $submittedData[ constant('SUBMITKEY') ] ) ) return;      // Das ist nicht der erste Aufruf dieses Submits (warum auch immer)
-        $submittedData[ constant('SUBMITKEY') ] = true;                     // Test-Key in die Submit-Daten einschleusen (zur Erkennung der Wiederholung)
+        if( isset( $submittedData[ constant('SUBMITKEY') ] ) ) return;                  // Das ist nicht der erste Aufruf dieses Submits (warum auch immer)
+        $submittedData[ constant('SUBMITKEY') ] = true;                                 // Test-Key in die Submit-Daten einschleusen (zur Erkennung der Wiederholung)
 
-        if( $form->pdff_on != '1' ) return;                                 // PDF-Forms abgeschaltet!
+        if( $form->pdff_on != '1' ) return;                                             // PDF-Forms abgeschaltet!
 
         $rootDir = System::getContainer()->getParameter('kernel.project_dir');
         $tags = System::getContainer()->get('contao.insert_tag.parser');
+        $session = System::getContainer()->get('request_stack')->getSession();
+        if( $session && !$session->isStarted( ) ) {                                     // IF( keine Session )
+            $session->start( );                                                         //   Session nachträglich starten
+        }                                                                               // ENDIF
 
         // Aufbau eines Feldes mit den Feldtypen
         $db = Database::getInstance( );
@@ -62,7 +66,7 @@ class PrepareFormDataListener
 
         // Bei mp_forms-Verwendung muss ab Step 2 die Session erst geladen werden
         if( $flag_mpforms && ( $tags->replaceInline( '{{mp_forms::' . $form->id . '::step::current}}' ) > 1 ) ) {
-            $arrFields = $_SESSION['pdf_forms']['form_' . $form->id]['arrFields'] ?? [];     // Vorhandene Daten laden
+            $arrFields = $session?->get( 'pdf_forms.form_' . $form->id . '.arrFields', [] );    // ggf. vorhandene Daten laden
         }
 
         foreach( $arrTypes as $key=>$type ) {                                           // Alle Felder verarbeiten
@@ -75,7 +79,7 @@ class PrepareFormDataListener
             }                                                                           // ENDIF
         }           
         foreach( $files as $key=>$upload ) {                                            // Alle Uploads verarbeiten           
-            if( isset( $submittedData[$key] ) ) {                                       // IF( Feld in den Daten vorhanden )
+            if( isset( $arrTypes[$key] ) ) {                                            // IF( Feld in den Daten vorhanden )
                 $widgetName = PdfformsHelper::normalisierung( $key );                   //   normalisierter Feldname
 
                 if( !$upload['error'] ) {           
@@ -86,7 +90,7 @@ class PrepareFormDataListener
                 }
             }                                                                           // ENDIF
         }
-        $_SESSION['pdf_forms']['form_' . $form->id]['arrFields'] = $arrFields;          // Aktualisierte Formulardaten wieder in die Session
+        $session?->set( 'pdf_forms.form_' . $form->id . '.arrFields', $arrFields );     // Aktualisierte Formulardaten wieder in die Session
 
         // bei mp_forms muss ggf. weiter gesammelt werden
         if( $flag_mpforms && ( $tags->replaceInline( '{{mp_forms::' . $form->id . '::step::percentage}}' ) < 99.9 ) ) {
@@ -94,7 +98,7 @@ class PrepareFormDataListener
         }
 
         // Beginn der Verarbeitung der Formulardaten
-        $_SESSION['pdf_forms']['formid'] = $form->id;
+        $session?->set( 'pdf_forms.formid', $form->id ) ;
 
         // Dateinamen festlegen
         // Der InsertTag {{form_session_data::*}} steht noch nicht zur Verfügung, 
@@ -156,7 +160,7 @@ class PrepareFormDataListener
                          'arrFields'     => $arrFields,
                        );
         unset( $arrFields );
-        $_SESSION['pdf_forms']['form_' . $form->id] = [];          // Gesammelte Sessiondaten zum Formular löschen
+        $session?->remove( 'pdf_forms.form_' . $form->id . '.arrFields' );      // Gesammelte Sessiondaten zum Formular löschen
 
         // Offsets eintragen, wenn angegeben
         $ofs = StringUtil::deserialize( $form->pdff_offset );

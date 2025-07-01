@@ -3,7 +3,7 @@
 /**
  * Extension for Contao 5
  *
- * @copyright  Softleister 2014-2024
+ * @copyright  Softleister 2014-2025
  * @author     Softleister <info@softleister.de>
  * @package    contao-pdfforms-bundle
  * @licence    LGPL
@@ -33,7 +33,7 @@ $GLOBALS['TL_LANG']['tl_pdff_positions']['published']          = ['Published', '
 $GLOBALS['TL_LANG']['tl_pdff_positions']['picsize']            = ['Dimensions', 'Size of the box width x height in mm. If one value is specified as 0, it will be calculated proportionally.'];
 $GLOBALS['TL_LANG']['tl_pdff_positions']['picture']            = ['Picture', 'Select your picture'];
 $GLOBALS['TL_LANG']['tl_pdff_positions']['pictype']            = ['Image source', 'Use an image from file or from a data stream.'];
-$GLOBALS['TL_LANG']['tl_pdff_positions']['pictag']             = ['Image data', 'Define the SimpleToken that contains the image data or a UUID.'];
+$GLOBALS['TL_LANG']['tl_pdff_positions']['pictag']             = ['Image data', 'Define the form field that contains the image data or a UUID.'];
 $GLOBALS['TL_LANG']['tl_pdff_positions']['qrsize']             = ['Size of bar code', 'Select the size.'];
 $GLOBALS['TL_LANG']['tl_pdff_positions']['noblanks']           = ['No automatic spaces', 'Suppresses the automatic insertion of spaces between fields.'];
 $GLOBALS['TL_LANG']['tl_pdff_positions']['bedingung']          = ['Condition', 'The item is only output if the condition is fulfilled or the condition is empty.'];
