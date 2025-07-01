@@ -83,6 +83,10 @@ class PrepareFormDataListener
                 $widgetName = PdfformsHelper::normalisierung( $key );                   //   normalisierter Feldname
 
                 if( !$upload['error'] ) {           
+                    $newPath = dirname( $upload['tmp_name'] ) . '/_' . basename( $upload['tmp_name'] );     // TMP-Datei umbennen, um das Löschen zu verhindern
+                    if( copy( $upload['tmp_name'], $newPath ) ) {
+                        $upload['tmp_name'] = $newPath;
+                    }
                     $arrFields[$widgetName]['value']    = $upload['tmp_name'];          //   Datei im TMP-Verzeichnis
                     $arrFields[$widgetName]['basename'] = $upload['name'];              //   Basename der Datei
                     $arrFields[$widgetName]['size']     = $upload['size'];              //   Dateigröße
@@ -211,6 +215,15 @@ class PrepareFormDataListener
         else {
             $pdfdatei = '';        // es wurde keine Datei erzeugt
         }
+
+        //--- temporäre Upload-Dateien aufräumen ---
+        foreach( $arrPDF['arrFields'] AS $key=>$attr ) {            // FOREACH Alle Formularfelder durchsuchen
+            if( !isset( $attr['basename'] ) ) continue;             //   Nur Temporäre Dateien
+
+            if( file_exists( $attr['value'] ) ) {                   //   IF( TMP-Datei existiert noch )
+                @unlink( $attr['value'] );                          //     Datei löschen
+            }                                                       //   ENDIF  
+        }                                                           // ENDFOREACH
     }
 
 
