@@ -24,8 +24,6 @@ use Contao\FrontendUser;
 use Softleister\PdfformsBundle\PdfformsHelper;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 
-define( 'SUBMITKEY', '__Zy7a9_jP6zZMbXMEJeRK__' );
-
 //-----------------------------------------------------------------
 //  InsertTags abarbeiten
 //
@@ -36,10 +34,12 @@ define( 'SUBMITKEY', '__Zy7a9_jP6zZMbXMEJeRK__' );
 #[AsHook('prepareFormData')]
 class PrepareFormDataListener
 {
+    public const SUBMITKEY = '__Zy7a9_jP6zZMbXMEJeRK__';
+    
     public function __invoke( array &$submittedData, array $labels, array $fields, Form $form, array &$files ): void
     {
-        if( isset( $submittedData[ constant('SUBMITKEY') ] ) ) return;                  // Das ist nicht der erste Aufruf dieses Submits (warum auch immer)
-        $submittedData[ constant('SUBMITKEY') ] = true;                                 // Test-Key in die Submit-Daten einschleusen (zur Erkennung der Wiederholung)
+        if( isset($submittedData[self::SUBMITKEY]) ) return;                  // Das ist nicht der erste Aufruf dieses Submits (warum auch immer)
+        $submittedData[self::SUBMITKEY] = true;                               // Test-Key in die Submit-Daten einschleusen (zur Erkennung der Wiederholung)
 
         if( $form->pdff_on != '1' ) return;                                             // PDF-Forms abgeschaltet!
 
