@@ -23,8 +23,7 @@ use Contao\StringUtil;
 use Contao\FrontendUser;
 use Softleister\PdfformsBundle\PdfformsHelper;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
-
-define( 'SUBMITKEY', '__Zy7a9_jP6zZMbXMEJeRK__' );
+use Symfony\Component\HttpFoundation\Request;
 
 //-----------------------------------------------------------------
 //  InsertTags abarbeiten
@@ -36,10 +35,15 @@ define( 'SUBMITKEY', '__Zy7a9_jP6zZMbXMEJeRK__' );
 #[AsHook('prepareFormData')]
 class PrepareFormDataListener
 {
+    public const SUBMITKEY = '__Zy7a9_jP6zZMbXMEJeRK__';
+
     public function __invoke( array &$submittedData, array $labels, array $fields, Form $form, array &$files ): void
     {
-        if( isset( $submittedData[ constant('SUBMITKEY') ] ) ) return;                  // Das ist nicht der erste Aufruf dieses Submits (warum auch immer)
-        $submittedData[ constant('SUBMITKEY') ] = true;                                 // Test-Key in die Submit-Daten einschleusen (zur Erkennung der Wiederholung)
+        /** @var Request $request */
+        $request = System::getContainer( )->get( 'request_stack' )->getCurrentRequest( );
+
+        if( $request->attributes->has( self::SUBMITKEY ) ) return;                      // Das ist nicht der erste Aufruf dieses Submits (warum auch immer)
+        $request->attributes->set( self::SUBMITKEY, true );                             // Test-Key in die Submit-Daten einschleusen (zur Erkennung der Wiederholung)
 
         if( $form->pdff_on != '1' ) return;                                             // PDF-Forms abgeschaltet!
 
