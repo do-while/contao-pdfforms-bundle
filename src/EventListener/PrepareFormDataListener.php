@@ -21,9 +21,9 @@ use Contao\Database;
 use Contao\FilesModel;
 use Contao\StringUtil;
 use Contao\FrontendUser;
+use Symfony\Component\HttpFoundation\Request;
 use Softleister\PdfformsBundle\PdfformsHelper;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
-use Symfony\Component\HttpFoundation\Request;
 
 //-----------------------------------------------------------------
 //  InsertTags abarbeiten
@@ -81,8 +81,13 @@ class PrepareFormDataListener
                 $arrFields[$widgetName]['value'] = $submittedData[$key];                //   gesendeter Wert
                 $arrFields[$widgetName]['orig']  = $key;                                //   Original Feldname
             }                                                                           // ENDIF
-        }           
-        foreach( $files as $key=>$upload ) {                                            // Alle Uploads verarbeiten           
+        }
+
+        // Die Upload-Files sind alle in einem Array, wobei sich beim FineUploader im Array ein Array mit den Dateien befindet
+        // Umformung in ein passendes Array
+        $flatFiles = self::flattenUploads( $files );
+
+        foreach( $flatFiles as $key=>$upload ) {                                        // Alle Uploads verarbeiten           
             if( isset( $arrTypes[$key] ) ) {                                            // IF( Feld in den Daten vorhanden )
                 $widgetName = PdfformsHelper::normalisierung( $key );                   //   normalisierter Feldname
 
@@ -228,6 +233,26 @@ class PrepareFormDataListener
                 @unlink( $attr['value'] );                          //     Datei löschen
             }                                                       //   ENDIF  
         }                                                           // ENDFOREACH
+    }
+
+
+    //-----------------------------------------------------------------
+    //  Upload-Dateien in $files in die gleiche Ebene rücken
+    //-----------------------------------------------------------------
+    protected function flattenUploads( array $files ): array
+    {
+        $result = [];
+
+        foreach( $files as $key => $value ) {
+            // Wenn das Element ein "einfacher Upload" ist (enthält z. B. 'tmp_name')
+            if( isset( $value['tmp_name'] ) ) $result[$key] = $value;
+
+            // Wenn das Element selbst ein Array von FineUploads ist
+            else if( is_array( $value ) ) {
+                foreach( $value as $subKey => $subValue ) $result[$subKey] = $subValue;
+            }
+        }
+        return $result;
     }
 
 
