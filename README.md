@@ -36,6 +36,7 @@ composer require do-while/contao-pdfforms-bundle
 
 
 ## Version
+* 2.3<br>Freigabedatum: 2026-02-15<br>Korrektur für fineuploader, interne Feldvariablen für PDF
 * 2.2<br>Freigabedatum: 2025-11-07<br>Kompatiblilität mit terminal42/contao-fineuploader
 * 2.1<br>Freigabedatum: 2025-01-24<br>Kompatiblilität mit terminal42/contao-mp_forms
 * 2.0<br>Freigabedatum: 2024-08-10<br>Version für Contao ab Version 5.3 LTS
@@ -45,4 +46,4 @@ composer require do-while/contao-pdfforms-bundle
 **Problem melden | *Report Problem*:**<br>per E-Mail | *via Email*: licence@softleister.de
 
 ___
-Softleister - 2025-11-07
+Softleister - 2026-02-15

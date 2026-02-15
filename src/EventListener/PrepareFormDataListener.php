@@ -5,7 +5,7 @@ declare( strict_types=1 );
 /**
  * Extension for Contao 5
  *
- * @copyright  Softleister 2014-2025
+ * @copyright  Softleister 2014-2026
  * @author     Softleister <info@softleister.de>
  * @package    contao-pdfforms-bundle
  * @licence    LGPL
@@ -18,6 +18,7 @@ use Contao\Form;
 use Contao\Dbafs;
 use Contao\System;
 use Contao\Database;
+use Contao\Validator;
 use Contao\FilesModel;
 use Contao\StringUtil;
 use Contao\FrontendUser;
@@ -74,12 +75,15 @@ class PrepareFormDataListener
         }
 
         foreach( $arrTypes as $key=>$type ) {                                           // Alle Felder verarbeiten
+            if( $type === 'fineUploader' ) continue;                                    //   IF( Fineuploader ) nicht hier eintragen, kommt erst bei den Uploads
+            
             if( isset( $submittedData[$key] ) ) {                                       // IF( Feld in den Daten vorhanden )
                 $widgetName = PdfformsHelper::normalisierung( $key );                   //   normalisierter Feldname
 
-                $arrFields[$widgetName]['type']  = $type;                               //   Feldtyp (wichtig für die auswertenden InsertTags)
-                $arrFields[$widgetName]['value'] = $submittedData[$key];                //   gesendeter Wert
-                $arrFields[$widgetName]['orig']  = $key;                                //   Original Feldname
+                $arrFields[$widgetName]['type']    = $type;                             //   Feldtyp (wichtig für die auswertenden InsertTags)
+                $arrFields[$widgetName]['value']   = $submittedData[$key];              //   gesendeter Wert
+                $arrFields[$widgetName]['orig']    = $key;                              //   Original Feldname
+                $arrFields[$widgetName]['options'] = '';                                //   mögliche Optionen bei der Verarbeitung, z.B. 'basename:1'
             }                                                                           // ENDIF
         }
 
@@ -87,21 +91,33 @@ class PrepareFormDataListener
         // Umformung in ein passendes Array
         $flatFiles = self::flattenUploads( $files );
 
-        foreach( $flatFiles as $key=>$upload ) {                                        // Alle Uploads verarbeiten           
-            if( isset( $arrTypes[$key] ) ) {                                            // IF( Feld in den Daten vorhanden )
-                $widgetName = PdfformsHelper::normalisierung( $key );                   //   normalisierter Feldname
+        foreach( $flatFiles as $key=>$upload ) {                                        // Alle Uploads verarbeiten
+            $fieldkey = $key;
+            if( preg_match( '/^(.+)_\d+$/', $key, $matches ) ) {                        // bei fineUploader, die Dateinummer entfernen
+                $fieldkey = $matches[1];
+            }
+            if( isset( $arrTypes[$fieldkey] ) ) {                                               // IF( Feld in den Datentypen vorhanden )
+                $widgetName = PdfformsHelper::normalisierung( $key );                           //   normalisierter Feldname
 
                 if( !$upload['error'] ) {           
-                    $newPath = dirname( $upload['tmp_name'] ) . '/_' . basename( $upload['tmp_name'] );     // TMP-Datei umbennen, um das Löschen zu verhindern
+                    $newPath = dirname( $upload['tmp_name'] ) . '/_' . basename( $upload['tmp_name'] ); // TMP-Datei umbennen, um das Löschen zu verhindern
+                    $origPath = dirname( $upload['tmp_name'] ) . '/' . basename( $upload['tmp_name'] ); // Dateiname, wenn Speichern aktiviert
                     if( copy( $upload['tmp_name'], $newPath ) ) {
                         $upload['tmp_name'] = $newPath;
                     }
-                    $arrFields[$widgetName]['value']    = $upload['tmp_name'];          //   Datei im TMP-Verzeichnis
-                    $arrFields[$widgetName]['basename'] = $upload['name'];              //   Basename der Datei
-                    $arrFields[$widgetName]['size']     = $upload['size'];              //   Dateigröße
+                    $arrFields[$widgetName]['type']     = 'upload';                             //   Feldtyp
+                    $arrFields[$widgetName]['orig']     = $key;                                 //   Original-Feldname
+                    $arrFields[$widgetName]['value']    = $upload['tmp_name'];                  //   Datei im TMP-Verzeichnis
+                    $arrFields[$widgetName]['size']     = $upload['size'];                      //   Dateigröße
                     $arrFields[$widgetName]['temp']     = 'system/tmp/' . basename( $upload['tmp_name'] ) . '.' . pathinfo( $upload['name'] )['extension'];  // TMP-Verzeichnis von Contao
+                    $arrFields[$widgetName]['basename'] = $upload['name'];                      //   Basename der Datei
+                    $arrFields[$widgetName]['options']  = '';                                   //   mögliche Optionen bei der Verarbeitung, z.B. 'basename:1'
+                    if( isset( $upload['uuid'] ) && Validator::isUuid( $upload['uuid'] ) ) {    //   IF( Upload mit Speichern )
+                        $arrFields[$widgetName]['basename'] = $origPath;                        //     Basename+Pfad der Datei
+                        $arrFields[$widgetName]['uuid']     = $upload['uuid'];                  //     UUID der Datei
+                    }                                                                           //   ENDIF
                 }
-            }                                                                           // ENDIF
+            }                                                                                   // ENDIF
         }
         $session?->set( 'pdf_forms.form_' . $form->id . '.arrFields', $arrFields );     // Aktualisierte Formulardaten wieder in die Session
 

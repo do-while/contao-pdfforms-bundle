@@ -60,9 +60,10 @@ class PdfformsTestPdf extends Backend
         foreach( $arrTypes as $key=>$type ) {
             $widgetName = PdfformsHelper::normalisierung( $key );       // normalisierter Feldname
 
-            $arrFields[$widgetName]['type']  = $type;                   // Feldtyp (wichtig für die auswertenden InsertTags)
-            $arrFields[$widgetName]['value'] = $key;                    // (gesendeter Wert) Im TestPDF: Feldname
-            $arrFields[$widgetName]['orig']  = $key;                    // Original Feldname
+            $arrFields[$widgetName]['type']    = $type;                 // Feldtyp (wichtig für die auswertenden InsertTags)
+            $arrFields[$widgetName]['value']   = $key;                  // (gesendeter Wert) Im TestPDF: Feldname
+            $arrFields[$widgetName]['orig']    = $key;                  // Original Feldname
+            $arrFields[$widgetName]['options'] = '';                    // mögliche Optionen bei der Verarbeitung, z.B. 'basename:1'
         }
 
         $arrPDF = array( 'formid'        => $objForm->id,

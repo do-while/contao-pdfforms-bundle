@@ -5,7 +5,7 @@ declare( strict_types=1 );
 /**
  * Extension for Contao 5
  *
- * @copyright  Softleister 2014-2024
+ * @copyright  Softleister 2014-2026
  * @author     Softleister <info@softleister.de>
  * @package    contao-pdfforms-bundle
  * @licence    LGPL
@@ -169,7 +169,7 @@ $GLOBALS['TL_DCA']['tl_form']['fields']['pdff_multiform'] = array (
                         'label'             => &$GLOBALS['TL_LANG']['tl_form']['multiform_bedingung'],
                         'exclude'           => true,
                         'inputType'         => 'select',
-                        'eval'              => ['style' => 'width:235px', 'chosen' => true, 'includeBlankOption' => true],
+                        'eval'              => ['style' => 'width:585px', 'chosen' => true, 'includeBlankOption' => true],
                         'options_callback'  => ['tl_pdff_form', 'getFelder'],
                 ),
                 'seiten' => array

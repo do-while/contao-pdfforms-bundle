@@ -3,7 +3,7 @@
 /**
  * Extension for Contao 5
  *
- * @copyright  Softleister 2014-2024
+ * @copyright  Softleister 2014-2026
  * @author     Softleister <info@softleister.de>
  * @package    contao-pdfforms-bundle
  * @licence    LGPL
@@ -170,7 +170,7 @@ $GLOBALS['TL_DCA']['tl_pdff_positions'] = array
                         'label'             => &$GLOBALS['TL_LANG']['tl_pdff_positions']['textitem_bedingung'],
                         'exclude'           => true,
                         'inputType'         => 'select',
-                        'eval'              => ['style' => 'width:235px', 'chosen' => true, 'includeBlankOption' => true],
+                        'eval'              => ['style' => 'width:500px', 'chosen' => true, 'includeBlankOption' => true],
                         'options_callback'  => ['tl_pdff_positions', 'getFelder'],
                     ),
                     'invert' => array
