@@ -12,6 +12,7 @@ declare( strict_types=1 );
  * @see	       https://github.com/do-while/contao-pdfforms-bundle
  */
 
+use Contao\Image;
 use Contao\DataContainer;
 use Softleister\PdfformsBundle\PdfformsHelper;
 use Doctrine\DBAL\Platforms\AbstractMySQLPlatform;
@@ -31,8 +32,10 @@ $GLOBALS['TL_DCA']['tl_form']['palettes']['__selector__'][] = 'pdff_on';
 
 // Positions-Icon hinzufügen
 $GLOBALS['TL_DCA']['tl_form']['list']['operations']['positions'] = [
-    'href'      => 'table=tl_pdff_positions',
-    'icon'      => 'iconPDF.svg'
+    'href'            => 'table=tl_pdff_positions',
+    'icon'            => 'iconPDF.svg',
+    'primary'         => true,
+    'button_callback' => ['tl_pdff_form', 'renderPdfButton'],
 ];
 
 // Kopplung mit weiterer Child-Tabelle aufbauen
@@ -231,4 +234,19 @@ class tl_pdff_form extends tl_form
     }
 
 
+    //-----------------------------------------------------------------
+    //  PDF-Button nur anzeigen, wenn "PDF-Formular ausfüllen" angehakt ist
+    //-----------------------------------------------------------------
+    public function renderPdfButton( array $row, ?string $href, string $label, string $title, string $icon, string $attributes, string $table ): string
+    {
+        // Nur anzeigen wenn Checkbox aktiv
+        if( empty( $row['pdff_on'] ) ) return '';
+
+        $href .= '&id=' . $row['id'];
+
+        return '<a href="' . $href . '" title="' . htmlspecialchars( $title ) . '"' . $attributes . '>' . Image::getHtml( $icon, $label ) . '</a>';
+    }
+
+
+    //-----------------------------------------------------------------
 }

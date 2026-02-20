@@ -59,7 +59,8 @@ $GLOBALS['TL_DCA']['tl_pdff_positions'] = array
             (
                 'href'                => 'key=testpdf',
                 'class'               => 'header_testpdf',
-                'attributes'          => 'onclick="Backend.getScrollOffset()" accesskey="t"'
+                'attributes'          => 'onclick="Backend.getScrollOffset()" accesskey="t"',
+                'primary'             => true,
             ),
             'all'
         ),
