@@ -9,6 +9,14 @@ Zusätzlich zu den Textpositionen gibt es jetzt auch
 - Barcodepositionen für 1d- und 2D-Barcodes, wie Code39, EAN, QR-Code oder Datamatrix
 
 Eine ausführliche Anleitung finden Sie als PDF-Datei im Verzeichnis der Erweiterung:<br>`vendor/do-while/contao-pdfforms-bundle/src/Resources/contao/docs`
+
+### Bitte folgendes im Manager angeben:
+| Contao Version | contao-pdfforms-bundle |
+|-----|-----|
+| 5.3 ... 5.6 | ^2.3 |
+| 5.7 ... |  ^2.4 |
+<br>
+
 ___
 
 
@@ -23,6 +31,13 @@ In addition to the text positions, there are now also
 
 Detailed instructions can be found as a PDF file in the extension directory:<br>`vendor/do-while/contao-pdfforms-bundle/src/Resources/contao/docs`
 
+### Please specify the following in the manager:
+| Contao version | contao-pdfforms-bundle |
+|-----|-----|
+| 5.3 ... 5.6 | ^2.3 |
+| 5.7 ... |  ^2.4 |
+<br>
+
 
 ## Installation
 Installieren Sie die Erweiterung einfach mit dem **Contao Manager** oder auf der Kommandozeile mit dem **Composer**:<br>*Simply install the extension with the **Contao Manager** or on the command line with the **Composer**:*
@@ -36,6 +51,7 @@ composer require do-while/contao-pdfforms-bundle
 
 
 ## Version
+* 2.4<br>Freigabedatum: 2026-02-20<br>Version für Contao 5.7 LTS
 * 2.3<br>Freigabedatum: 2026-02-15<br>Korrektur für fineuploader, interne Feldvariablen für PDF
 * 2.2<br>Freigabedatum: 2025-11-07<br>Kompatiblilität mit terminal42/contao-fineuploader
 * 2.1<br>Freigabedatum: 2025-01-24<br>Kompatiblilität mit terminal42/contao-mp_forms
@@ -46,4 +62,4 @@ composer require do-while/contao-pdfforms-bundle
 **Problem melden | *Report Problem*:**<br>per E-Mail | *via Email*: licence@softleister.de
 
 ___
-Softleister - 2026-02-15
+Softleister - 2026-02-20

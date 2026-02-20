@@ -87,7 +87,7 @@ class PrepareFormDataListener
             }                                                                           // ENDIF
         }
 
-        // Die Upload-Files sind alle in einem Array, wobei sich beim FineUploader im Array ein Array mit den Dateien befindet
+        // Die Upload-Files sind alle in einem Array, wobei sich bei mehreren Dateien im Array ein Array mit den Dateien befindet
         // Umformung in ein passendes Array
         $flatFiles = self::flattenUploads( $files );
 
@@ -254,21 +254,40 @@ class PrepareFormDataListener
 
     //-----------------------------------------------------------------
     //  Upload-Dateien in $files in die gleiche Ebene rücken
+    //  - single upload: bleibt unter gleichem Key
+    //  - multi upload: uploadmulti => [0=>file, 1=>file] wird zu uploadmulti_0, uploadmulti_1
     //-----------------------------------------------------------------
-    protected function flattenUploads( array $files ): array
+    private static function flattenUploads( array $files ): array
     {
-        $result = [];
+        $flat = [];
+        foreach( $files as $fieldName => $value ) {
+            // Case 1: Single upload (assoc array with "name"/"tmp_name"/...)
+            if( self::isUploadArray( $value ) ) {
+                $flat[$fieldName] = $value;
+                continue;
+            }
+            // Case 2: Multi upload: numeric array of upload arrays
+            if( is_array( $value ) ) {
+                foreach( $value as $idx => $upload ) {
+                    if( !self::isUploadArray( $upload ) ) continue;     // unbekannte Struktur -> ignorieren oder optional übernehmen
 
-        foreach( $files as $key => $value ) {
-            // Wenn das Element ein "einfacher Upload" ist (enthält z. B. 'tmp_name')
-            if( isset( $value['tmp_name'] ) ) $result[$key] = $value;
-
-            // Wenn das Element selbst ein Array von FineUploads ist
-            else if( is_array( $value ) ) {
-                foreach( $value as $subKey => $subValue ) $result[$subKey] = $subValue;
+                    $flat[$fieldName . '_' . $idx] = $upload;
+                }
             }
         }
-        return $result;
+        return $flat;
+    }
+
+    
+    //-----------------------------------------------------------------
+    //  prüft, ob es ein mehrfaches Array ist
+    //-----------------------------------------------------------------
+    private static function isUploadArray( mixed $v ): bool
+    {
+        return is_array( $v )
+            && array_key_exists( 'name', $v )
+            && array_key_exists( 'tmp_name', $v )
+            && array_key_exists( 'error', $v );
     }
 
 

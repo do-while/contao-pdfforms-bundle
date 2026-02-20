@@ -12,7 +12,9 @@ declare( strict_types=1 );
  * @see	       https://github.com/do-while/contao-pdfforms-bundle
  */
 
+use Contao\DataContainer;
 use Softleister\PdfformsBundle\PdfformsHelper;
+use Doctrine\DBAL\Platforms\AbstractMySQLPlatform;
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
 
 
@@ -157,32 +159,35 @@ $GLOBALS['TL_DCA']['tl_form']['fields']['pdff_protectflags'] = array (
 );
 
 $GLOBALS['TL_DCA']['tl_form']['fields']['pdff_multiform'] = array (
-    'exclude'           => true,
-    'inputType'         => 'multiColumnWizard',
+    'inputType'         => 'rowWizard',
+    'fields'            => array
+                            (
+                                'bedingung' => array
+                                (
+                                    'label'             => &$GLOBALS['TL_LANG']['tl_form']['multiform_bedingung'],
+                                    'inputType'         => 'select',
+                                    'eval'              => ['chosen' => true, 'includeBlankOption' => true],
+                                    'options_callback'  => ['tl_pdff_form', 'getRowFelder'],
+                                ),
+                                'seiten' => array
+                                (
+                                    'label'             => &$GLOBALS['TL_LANG']['tl_form']['multiform_seiten'],
+                                    'default'           => '',
+                                    'inputType'         => 'text',
+                                    'eval'              => ['allowHtml' => true],
+                                ),
+                            ),
     'eval'              => array
-    (
-        'tl_class'      => 'clr',
-        'columnFields'  => array
-        (
-                'bedingung' => array
-                (
-                        'label'             => &$GLOBALS['TL_LANG']['tl_form']['multiform_bedingung'],
-                        'exclude'           => true,
-                        'inputType'         => 'select',
-                        'eval'              => ['style' => 'width:585px', 'chosen' => true, 'includeBlankOption' => true],
-                        'options_callback'  => ['tl_pdff_form', 'getFelder'],
-                ),
-                'seiten' => array
-                (
-                        'label'             => &$GLOBALS['TL_LANG']['tl_form']['multiform_seiten'],
-                        'default'           => '',
-                        'exclude'           => true,
-                        'inputType'         => 'text',
-                        'eval'              => ['allowHtml' => true, 'style' => 'width:265px'],
-                ),
-        )
-    ),
-    'sql'               => "mediumtext NULL"
+                            (
+                                'tl_class'      => 'clr',
+                                'actions'       => ['copy', 'delete'],
+                            ),
+    'sql'               => array
+                            (
+                                'type' => 'blob',
+                                'length' => AbstractMySQLPlatform::LENGTH_LIMIT_BLOB,
+                                'notnull' => false,
+                            ),
 );
 
 $GLOBALS['TL_DCA']['tl_form']['fields']['pdff_font'] = array (
@@ -220,9 +225,9 @@ class tl_pdff_form extends tl_form
     //  Erstellt eine Liste der Formularfelder
     //  $dc->currentRecord   ist die ID des tl_pdff_positions
     //-----------------------------------------------------------------
-    public function getFelder( $dc )
+    public function getRowFelder( DataContainer $dc )
     {
-        return PdfformsHelper::getFormFields( $dc->currentRecord );
+        return PdfformsHelper::getFormFields( $dc->id );
     }
 
 

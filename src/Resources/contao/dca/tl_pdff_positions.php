@@ -17,6 +17,7 @@ use Contao\FilesModel;
 use Contao\StringUtil;
 use Contao\DataContainer;
 use Softleister\PdfformsBundle\PdfformsHelper;
+use Doctrine\DBAL\Platforms\AbstractMySQLPlatform;
 
 
 /**
@@ -148,43 +149,44 @@ $GLOBALS['TL_DCA']['tl_pdff_positions'] = array
             'sql'                     => ['type' => 'string', 'length' => 12, 'default' => 'QRCODE,Q']
         ),
 //-------
-        'textitems' => array
-        (
-            'exclude'                 => true,
-            'inputType'               => 'multiColumnWizard',
-            'search'                  => true,
-            'eval'                    => array
-            (
-                'columnFields' => array
-                (
-                    'feld' => array
-                    (
-                        'label'             => &$GLOBALS['TL_LANG']['tl_pdff_positions']['textitem_feld'],
-                        'default'           => '',
-                        'exclude'           => true,
-                        'inputType'         => 'text',
-                        'eval'              => ['allowHtml' => true, 'style' => 'width:350px'],
-                    ),
-                    'bedingung' => array
-                    (
-                        'label'             => &$GLOBALS['TL_LANG']['tl_pdff_positions']['textitem_bedingung'],
-                        'exclude'           => true,
-                        'inputType'         => 'select',
-                        'eval'              => ['style' => 'width:500px', 'chosen' => true, 'includeBlankOption' => true],
-                        'options_callback'  => ['tl_pdff_positions', 'getFelder'],
-                    ),
-                    'invert' => array
-                    (
-                        'label'             => &$GLOBALS['TL_LANG']['tl_pdff_positions']['textitem_invert'],
-                        'exclude'           => true,
-                        'inputType'         => 'select',
-                        'options'           => ['used', 'empty'],
-                        'reference'         => &$GLOBALS['TL_LANG']['tl_pdff_positions']['textitem_inverts'],
-                        'eval'              => ['style' => 'width:100px'],
-                    ),
-                )
-            ),
-            'sql'                     => "mediumtext NULL"
+        'textitems' => array (
+            'inputType'         => 'rowWizard',
+            'search'            => true,
+            'fields'            => array
+                                    (
+                                        'feld' => array
+                                        (
+                                            'label'             => &$GLOBALS['TL_LANG']['tl_pdff_positions']['textitem_feld'],
+                                            'default'           => '',
+                                            'inputType'         => 'text',
+                                            'eval'              => ['allowHtml' => true],
+                                        ),
+                                        'bedingung' => array
+                                        (
+                                            'label'             => &$GLOBALS['TL_LANG']['tl_pdff_positions']['textitem_bedingung'],
+                                            'inputType'         => 'select',
+                                            'eval'              => ['chosen' => true, 'includeBlankOption' => true],
+                                            'options_callback'  => ['tl_pdff_positions', 'getFelder'],
+                                        ),
+                                        'invert' => array
+                                        (
+                                            'label'             => &$GLOBALS['TL_LANG']['tl_pdff_positions']['textitem_invert'],
+                                            'inputType'         => 'select',
+                                            'options'           => ['used', 'empty'],
+                                            'reference'         => &$GLOBALS['TL_LANG']['tl_pdff_positions']['textitem_inverts'],
+                                        ),
+                                    ),
+            'eval'              => array
+                                    (
+                                        'tl_class'      => 'clr',
+                                        'actions'       => ['copy', 'delete'],
+                                    ),
+            'sql'               => array
+                                    (
+                                        'type' => 'blob',
+                                        'length' => AbstractMySQLPlatform::LENGTH_LIMIT_BLOB,
+                                        'notnull' => false,
+                                    ),
         ),
         'notice' => array
         (
@@ -407,10 +409,10 @@ class tl_pdff_positions extends Backend
     //  Erstellt eine Liste der Formularfelder für Multicolumn-Wizard
     //  $dc->currentRecord   ist die ID des tl_pdff_positions
     //-----------------------------------------------------------------
-    public function getFelder( $dc )
+    public function getFelder( DataContainer $dc )
     {
         $objForm = $this->Database->prepare( "SELECT pid FROM tl_pdff_positions WHERE id=?" )
-                                  ->execute( $dc->currentRecord );
+                                  ->execute( $dc->id );
                                   
         if( $objForm->numRows < 1 ) return [];
         

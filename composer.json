@@ -16,9 +16,8 @@
         "source": "https://github.com/do-while/contao-pdfforms-bundle"
     },
     "require": {
-        "php": "^8.2",
-        "contao/core-bundle": "^5.3",
-        "menatwork/contao-multicolumnwizard-bundle": "^3.6",
+        "php": "^8.3",
+        "contao/core-bundle": "^5.7",
         "tecnickcom/tcpdf": "^6.6",
         "setasign/fpdi": "^2.5"
     },
