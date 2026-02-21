@@ -322,7 +322,7 @@ $GLOBALS['TL_DCA']['tl_pdff_positions'] = array
         (
             'exclude'                 => true,
             'inputType'               => 'select',
-            'eval'                    => ['chosen' => true, 'includeBlankOption' => true, 'tl_class' => 'w25'],
+            'eval'                    => ['chosen' => true, 'includeBlankOption' => true, 'tl_class' => 'clr w50'],
             'options_callback'        => ['tl_pdff_positions', 'optgetFelder'],
             'sql'                     => ['type' => 'string', 'length' => 80, 'default' => '']
         ),
@@ -330,7 +330,7 @@ $GLOBALS['TL_DCA']['tl_pdff_positions'] = array
         (
             'exclude'                 => true,
             'inputType'               => 'checkbox',
-            'eval'                    => ['tl_class' => 'm12 w25'],
+            'eval'                    => ['tl_class' => 'm12 w50'],
             'sql'                     => ['type' => 'string', 'length' => 1, 'fixed' => true, 'default' => '']
         ),
 //-------
