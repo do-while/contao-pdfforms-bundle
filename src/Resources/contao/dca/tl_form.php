@@ -17,6 +17,7 @@ use Contao\DataContainer;
 use Softleister\PdfformsBundle\PdfformsHelper;
 use Doctrine\DBAL\Platforms\AbstractMySQLPlatform;
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
+use Contao\CoreBundle\DataContainer\DataContainerOperation;
 
 
 PaletteManipulator::create()
@@ -237,14 +238,13 @@ class tl_pdff_form extends tl_form
     //-----------------------------------------------------------------
     //  PDF-Button nur anzeigen, wenn "PDF-Formular ausfüllen" angehakt ist
     //-----------------------------------------------------------------
-    public function renderPdfButton( array $row, ?string $href, string $label, string $title, string $icon, string $attributes, string $table ): string
+	public function renderPdfButton( DataContainerOperation $operation )
     {
-        // Nur anzeigen wenn Checkbox aktiv
-        if( empty( $row['pdff_on'] ) ) return '';
+		$row = $operation->getRecord( );
 
-        $href .= '&id=' . $row['id'];
-
-        return '<a href="' . $href . '" title="' . htmlspecialchars( $title ) . '"' . $attributes . '>' . Image::getHtml( $icon, $label ) . '</a>';
+        if( empty( $row['pdff_on'] ) ) {
+            $operation->hide( );
+        }
     }
 
 
