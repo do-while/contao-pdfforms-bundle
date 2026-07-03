@@ -163,8 +163,6 @@ class PrepareFormDataListener
             while( file_exists( $rootDir . '/' . $savepath . '/' . $filename . '-' . $i . '.pdf' ) ) $i++;
             $filename = $filename . '-' . $i;
         }
-        $pdfdatei = $savepath . '/' . $filename . '.pdf';
-        file_put_contents( $rootDir . '/' . $pdfdatei, '' );                // leere Datei erzeugen um Dateinamen zu sichern
 
         $arrPDF = array( 'formid'        => $form->id,
                          'formtitle'     => $form->title,
@@ -202,6 +200,10 @@ class PrepareFormDataListener
                 $arrPDF = System::importStatic( $callback[0] )->{$callback[1]}( $arrPDF );
             }
         }
+
+        // Erst hier die Datei reservieren, der Hook könnte den Dateinamen verändert haben
+        $pdfdatei = $savepath . '/' . $arrPDF['filename'] . '.pdf';
+        file_put_contents( $rootDir . '/' . $pdfdatei, '' );                // leere Datei erzeugen um Dateinamen zu sichern
 
 
         // Own tcpdf.php from files directory
