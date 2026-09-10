@@ -201,6 +201,9 @@ class PrepareFormDataListener
             }
         }
 
+        // Wenn der HOOK den Dateinamen leer zurückgibt, soll kein PDF erstellt werden, dann wird hier beendet.
+        if( empty( $arrPDF['filename'] ) ) return;
+
         // Erst hier die Datei reservieren, der Hook könnte den Dateinamen verändert haben
         $pdfdatei = $savepath . '/' . $arrPDF['filename'] . '.pdf';
         file_put_contents( $rootDir . '/' . $pdfdatei, '' );                // leere Datei erzeugen um Dateinamen zu sichern
